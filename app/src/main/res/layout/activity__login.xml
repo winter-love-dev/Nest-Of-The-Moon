@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/white"
+              android:focusable="true"
+              android:focusableInTouchMode="true"
+              android:orientation="vertical"
+              tools:context=".Activity_Login">
+
+    <ImageView
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
+            android:layout_marginTop="55dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/logo_1"/>
+
+    <TextView
+            android:layout_gravity="center"
+            android:textSize="30dp"
+            android:textColor="@color/bg_main"
+            android:text="Nest Of The Moon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+            android:layout_gravity="center"
+            android:textSize="20dp"
+            android:textColor="@color/bg_main"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:text="Please Login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <!--이메일-->
+    <EditText
+            android:id="@+id/login_mail"
+            android:layout_marginBottom="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/item_edit_text_1"
+            android:gravity="center"
+            android:hint="이메일"
+            android:inputType="textEmailAddress"
+            android:padding="8dp"
+            android:textColor="@color/gray"
+            android:textColorHint="@color/gray"
+            android:textSize="20dp"/>
+
+    <!--</com.google.android.material.textfield.TextInputLayout>-->
+
+    <!--<com.google.android.material.textfield.TextInputLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:textColorHint="@color/white">-->
+
+    <!--비밀번호-->
+    <EditText
+            android:id="@+id/login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/item_edit_text_1"
+            android:gravity="center"
+            android:hint="비밀번호"
+            android:inputType="textPassword"
+            android:padding="8dp"
+            android:textColor="@color/gray"
+            android:textColorHint="@color/gray"
+            android:textSize="20dp"/>
+
+    <!--</com.google.android.material.textfield.TextInputLayout>-->
+
+    <ProgressBar
+            android:id="@+id/login_loading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:visibility="gone"/>
+
+    <!--로그인 버튼-->
+    <Button
+            android:id="@+id/loggin_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="15dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/item_button_white"
+            android:text="로그인"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
+
+    <!--가입버튼-->
+    <TextView
+            android:id="@+id/go_reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/item_stroke"
+            android:gravity="center"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="5dp"
+            android:text="가입하기"
+            android:textColorHint="@color/black"
+            android:textSize="12dp"/>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="10dp"
+            android:layout_height="1dp"
+            android:layout_marginHorizontal="100dp"
+            android:background="@color/bg_main"/>
+
+    <!--저작권 표시-->
+    <!--모든 저작권은 김성훈에게 있습니다. 모든 페이지 내용의 소유권은 김성훈이 가지고 있습니다.-->
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Copyright(c)2019 by 김성훈. \n All Page content is \n property of 김성훈."
+            android:textColor="@color/gray"
+            android:textSize="10sp"/>
+
+</LinearLayout>

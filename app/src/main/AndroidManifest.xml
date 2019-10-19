@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.nest_of_the_moon">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/logo_1"
+            android:label="Nest Of\nThe Moon"
+            android:largeHeap="true"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/AppTheme">
+        <activity android:name=".Menu_C_Management.Activity_Cart">
+        </activity>
+        <activity android:name=".Menu_B_Management.Activity_Menu_Edit">
+        </activity>
+        <activity android:name=".Menu_B_Management.Activity_Create_Menu">
+        </activity>
+        <activity android:name=".Barista.Activity_Barista_Home">
+        </activity>
+        <activity android:name=".Activity_Register">
+        </activity>
+        <activity android:name=".Activity_Login">
+        </activity>
+        <activity android:name=".Client.Activity_Client_Home">
+        </activity>
+        <activity android:name=".Activity_Intro">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity> <!-- ImageCropper -->
+        <activity
+                android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+                android:theme="@style/Base.Theme.AppCompat" />
+    </application>
+
+</manifest>

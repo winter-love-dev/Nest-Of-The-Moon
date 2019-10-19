@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+      xmlns:android="http://schemas.android.com/apk/res/android"
+      android:orientation="vertical"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/bg_main"
+            android:layout_marginHorizontal="15dp"
+            android:text="정렬 방법"
+            android:textSize="20dp" />
+
+    <RadioGroup
+            android:layout_marginHorizontal="15dp"
+            android:id="@+id/radio_group_menu_management_sort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="30dp"
+            android:orientation="vertical">
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_1_menu_management_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="생성한 날짜순 정렬"
+                android:textSize="18dp" />
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_2_menu_management_sort"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="판매중인 상품 우선 정렬"
+                android:textSize="18dp" />
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_3_menu_management_sort"
+                android:text="품절된 상품 우선 정렬"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp" />
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_4_menu_management_sort"
+                android:text="가나다순 정렬"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp" />
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_5_menu_management_sort"
+                android:text="음료 우선 정렬"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp" />
+
+        <RadioButton
+                android:layout_marginBottom="15dp"
+                android:id="@+id/radio_button_6_menu_management_sort"
+                android:text="원두 우선 정렬"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp" />
+
+
+    </RadioGroup>
+
+    <TextView
+            android:id="@+id/menu_management_done"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_main"
+            android:gravity="center"
+            android:padding="13dp"
+            android:text="정렬"
+            android:textColor="@color/white"
+            android:textSize="16dp" />
+
+</LinearLayout>

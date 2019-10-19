@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:background="@color/white"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+                android:layout_marginHorizontal="13dp"
+                android:paddingVertical="13dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:layout_marginHorizontal="2dp"
+                    android:text="상품명"
+                    android:textSize="10dp"
+                    android:textColor="@color/bg_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:id="@+id/menu_name"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="상품명"
+                    android:textSize="14dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:layout_marginTop="7dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="가격"
+                    android:textSize="10dp"
+                    android:textColor="@color/bg_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:id="@+id/menu_price"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="가격"
+                    android:textSize="14dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:layout_marginTop="7dp"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="1회 제공 용량"
+                    android:textSize="10dp"
+                    android:textColor="@color/bg_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:id="@+id/menu_serving_size"
+                    android:layout_marginHorizontal="2dp"
+                    android:text="용량"
+                    android:textSize="14dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            <!--픽업시간 안내 영역-->
+            <LinearLayout
+                    android:id="@+id/menu_pick_up_noti_container"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_marginTop="7dp"
+                        android:layout_marginHorizontal="2dp"
+                        android:text="픽업 추천 시간"
+                        android:textSize="10dp"
+                        android:textColor="@color/bg_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:id="@+id/menu_pick_up_recommend_time"
+                        android:layout_marginHorizontal="2dp"
+                        android:text="픽업 추천 시간 (분)"
+                        android:textSize="14dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:layout_marginTop="7dp"
+                        android:layout_marginHorizontal="2dp"
+                        android:text="음료 폐기 시간"
+                        android:textSize="10dp"
+                        android:textColor="@color/bg_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:id="@+id/menu_serving_impossible_time"
+                        android:layout_marginHorizontal="2dp"
+                        android:text="음료 폐기 시간 (분)"
+                        android:textSize="14dp"
+                        android:layout_marginBottom="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!--
+            // 1. 가나다순
+            // 2. 커피 음료만
+            // 3. 원두만
+        -->
+
+        <FrameLayout
+                android:layout_width="200dp"
+                android:layout_height="wrap_content">
+
+            <ImageView
+                    android:id="@+id/menu_thumb"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
+            <LinearLayout
+                    android:gravity="center"
+                    android:background="#86000000"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                <TextView
+                        android:id="@+id/menu_serving_way"
+                        android:gravity="center"
+                        android:text="HOT / WAY"
+                        android:textSize="11dp"
+                        android:textColor="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:id="@+id/menu_type"
+                        android:gravity="center"
+                        android:text="원두"
+                        android:textSize="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:textColor="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <TextView
+                        android:id="@+id/menu_sale_message"
+                        android:gravity="center"
+                        android:layout_marginHorizontal="2dp"
+                        android:text="판매 중단"
+                        android:textSize="10dp"
+                        android:textColor="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <LinearLayout
+                        android:layout_marginBottom="20dp"
+                        android:layout_gravity="center"
+                        android:id="@+id/menu_sale_switch"
+                        android:orientation="horizontal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+
+                    <TextView
+                            android:id="@+id/menu_sale_switch_on"
+                            android:padding="5dp"
+                            android:text="판 매"
+                            android:textSize="15dp"
+                            android:textColor="@color/white"
+                            android:background="@drawable/item_switch_theme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                    <TextView
+                            android:id="@+id/menu_sale_switch_off"
+                            android:padding="5dp"
+                            android:text="품 절"
+                            android:textSize="15dp"
+                            android:textColor="@color/white"
+                            android:background="@color/bg_main"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <TextView
+                        android:layout_gravity="center"
+                        android:id="@+id/menu_edit_button"
+                        android:text="정보 수정"
+                        android:textSize="15dp"
+                        android:padding="5dp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/item_stroke_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <View
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp"
+            android:background="@color/gray2" />
+
+</LinearLayout>
