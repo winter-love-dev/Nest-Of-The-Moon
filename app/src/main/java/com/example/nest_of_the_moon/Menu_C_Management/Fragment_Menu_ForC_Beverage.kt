@@ -55,7 +55,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
     var TAG: String = "Fragment_Menu_ForC_Beverage"
 
     var dialog_menu_detail_payment_complete: TextView? = null
-    var dialog_menu_detail_order_detail_page_button: TextView? = null
+    var dialog_menu_detail_order_detail_page: TextView? = null
 
     var nest_Order_Way: String? = null
 
@@ -63,7 +63,13 @@ class Fragment_Menu_ForC_Beverage: Fragment()
     var menu_c_beverage_recycler_view: RecyclerView? = null
     var item_Nest_Menu_Client = arrayListOf<Item_Nest_Menu>()
 
-    var cart: String? = null
+    var dialog_menu_detail_webview: WebView? = null
+
+    companion object
+    {
+        var cart: String? = null
+        var cartCount: Int? = null
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -93,7 +99,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                                                          )
 
         // todo: 서버로 메뉴 목록 요청 후 리사이클러뷰에 메뉴 세팅하기
-        getClientMenuList("beverage") // beans
+        getClientMenuList("beverage") // beverage
 
         return view
     }
@@ -255,10 +261,10 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                     dialog_view.findViewById(R.id.dialog_menu_detail_option_request)
 
                 // 결제 진행시 다이얼로그에서 진행함
-                var dialog_menu_detail_webview: WebView = dialog_view.findViewById(R.id.dialog_menu_detail_webview)
+                dialog_menu_detail_webview = dialog_view.findViewById(R.id.dialog_menu_detail_webview)
                 var dialog_menu_detail_bottom_button_area: LinearLayout = dialog_view.findViewById(R.id.dialog_menu_detail_bottom_button_area)
                 dialog_menu_detail_payment_complete = dialog_view.findViewById(R.id.dialog_menu_detail_payment_complete)
-                dialog_menu_detail_order_detail_page_button = dialog_view.findViewById(R.id.dialog_menu_detail_order_detail_page)
+                dialog_menu_detail_order_detail_page = dialog_view.findViewById(R.id.dialog_menu_detail_order_detail_page)
 
                 Picasso.get().load(item_Nest_Menu_Client.get(position).Menu_Thumb)
                     .placeholder(R.drawable.logo_1) // 로드되지 않은 경우 기본 이미지
@@ -568,10 +574,14 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                                         Toast.makeText(activity,"장바구니에 담김",Toast.LENGTH_SHORT).show();
 
                                         // 장바구니 갯수 추가
-                                        var cartCount = Integer.parseInt(cart) + 1
+//                                        cartCount = Integer.parseInt(cart) + 1
+
+                                        cart = (Integer.parseInt(cart) + 1).toString()
 
                                         // 장바구니에 담긴 상품 갯수 표시하기
-                                        menu_c_management_cart?.text = "(" + cartCount + ")"
+                                        menu_c_management_cart?.text = "(" + cart + ")"
+
+                                        Log.e(TAG, "cart: $cart")
 
                                         dialog.dismiss()
                                     }
@@ -645,11 +655,11 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                     // 바로 주문
                     nest_Order_Way = "orderNow"
 
-                    dialog_menu_detail_webview.visibility = View.VISIBLE
+                    dialog_menu_detail_webview?.visibility = View.VISIBLE
                     dialog_menu_detail_bottom_button_area.visibility = View.GONE
 
                     // todo: 카카오 웹뷰 활성화
-                    dialog_menu_detail_webview.setWebViewClient(object: KakaoWebViewClient(requireActivity())
+                    dialog_menu_detail_webview?.setWebViewClient(object: KakaoWebViewClient(requireActivity())
                     {
                         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?)
                         {
@@ -738,11 +748,16 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                         }
                     })
 
-                    val settings = dialog_menu_detail_webview.getSettings()
-                    settings.setJavaScriptEnabled(true)
+                    val settings = dialog_menu_detail_webview?.getSettings()
+                    settings?.setJavaScriptEnabled(true)
 
                     // 웹뷰에서 카카오페이 실행하기
-                    dialog_menu_detail_webview.loadUrl("http://115.68.231.84/addJoin_kakao.php?amount=" + priceOption) // 카카오페이로 입력값 보내기
+                    dialog_menu_detail_webview?.loadUrl("http://115.68.231.84/addJoin_kakao.php?amount=" + priceOption) // 카카오페이로 입력값 보내기
+
+                    // 다이얼로그 닫기
+                    dialog_menu_detail_order_detail_page?.setOnClickListener(View.OnClickListener {
+                        dialog.dismiss()
+                    })
                 })
             }) // 상세 페이지 (다이얼로그) 끝
         }
@@ -768,7 +783,10 @@ class Fragment_Menu_ForC_Beverage: Fragment()
         {
             // 결제 완료 알림화면 활성화
             dialog_menu_detail_payment_complete!!.visibility = View.VISIBLE
-            dialog_menu_detail_order_detail_page_button!!.visibility = View.VISIBLE
+            dialog_menu_detail_order_detail_page!!.visibility = View.VISIBLE
+
+            // 웹뷰가 클릭되지 않게 막기
+            dialog_menu_detail_webview!!.visibility = View.GONE
         }
 
         super.onStop()

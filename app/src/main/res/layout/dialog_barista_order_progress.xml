@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <ScrollView
+            android:id="@+id/bop_scroll"
+            android:scrollbars="none"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <!--bop: barista order progress-->
+
+            <TextView
+                    android:text="환불"
+                    android:id="@+id/bop_refund_button"
+                    android:layout_margin="20dp"
+                    android:background="@drawable/item_button_1"
+                    android:textColor="@color/bg_main"
+                    android:layout_gravity="left"
+                    android:textSize="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <!--todo: 주문 번호-->
+            <TextView
+                    android:id="@+id/bop_serial_number"
+                    android:text="D13"
+                    android:layout_marginTop="55dp"
+                    android:textColor="@color/bg_main"
+                    android:layout_gravity="center"
+                    android:textSize="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:text="주문 번호"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:textSize="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:id="@+id/bop_order_time"
+                    android:text="결제한 시간: 00시 00분"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:textSize="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:visibility="gone"
+                    android:id="@+id/progress_completion_time"
+                    android:text="제작 완료: 00시 00분"
+                    android:textColor="@color/gray"
+                    android:layout_gravity="center"
+                    android:textSize="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:visibility="gone"
+                    android:layout_marginTop="30dp"
+                    android:id="@+id/bop_serving_impossible_time_2"
+                    android:text="보관 시간: 00시 00분 까지"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:textSize="17dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/oht_1_order_pick_up_noti_area"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_marginTop="80dp"
+                        android:layout_marginHorizontal="7dp"
+                        android:text="픽업 추천시간 안내"
+                        android:textSize="10dp"
+                        android:textColor="@color/bg_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/black"
+                            android:layout_marginLeft="15dp"
+                            android:gravity="center"
+                            android:text="음료 완성 후 "
+                            android:textSize="20dp" />
+
+                    <TextView
+                            android:id="@+id/oht_1_order_pick_up_recommend_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:text="Noti"
+                            android:textColor="@color/bg_main"
+                            android:textSize="20dp" />
+
+                    <TextView
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="안에 픽업하면"
+                            android:textSize="20dp" />
+
+                </LinearLayout>
+
+                <TextView
+                        android:layout_marginLeft="15dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:text="맛있게 드실 수 있습니다 :)"
+                        android:textSize="20dp" />
+
+                <TextView
+                        android:layout_marginTop="30dp"
+                        android:layout_marginHorizontal="7dp"
+                        android:text="픽업 불가능한 시간 안내 (환불 불가)"
+                        android:textSize="10dp"
+                        android:textColor="@color/bg_main"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:id="@+id/oht_1_order_pick_up_serving_impossible_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:gravity="center_vertical"
+                            android:text="Noti"
+                            android:textColor="@color/bg_main"
+                            android:textSize="18dp" />
+
+                    <TextView
+                            android:textColor="@color/black"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:text="안에 픽업하지 않으면"
+                            android:textSize="20dp" />
+
+                </LinearLayout>
+
+                <TextView
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginBottom="60dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:text="음료가 식어서 제공할 수 없습니다 :("
+                        android:textSize="20dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="70dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_weight="1"
+                        android:id="@+id/bop_order_count"
+                        android:text="주문내역 00건"
+                        android:textColor="@color/black"
+                        android:textSize="25dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:descendantFocusability="blocksDescendants">
+
+                <androidx.recyclerview.widget.RecyclerView
+                        android:layout_weight="1"
+                        android:id="@+id/bop_recycler_view"
+                        android:overScrollMode="never"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <TextView
+                        android:layout_gravity="center"
+                        android:text="총 00원"
+                        android:layout_marginHorizontal="20dp"
+                        android:id="@+id/bop_total_price"
+                        android:textColor="@color/black"
+                        android:textSize="25dp"
+                        android:layout_weight="1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/bop_go_top"
+                        app:civ_border_color="@color/bg_main"
+                        android:background="@drawable/item_button_2"
+                        android:layout_marginRight="15dp"
+                        android:src="@drawable/ic_go_top"
+                        android:layout_width="37dp"
+                        android:layout_height="37dp" />
+
+            </LinearLayout>
+
+            <TextView
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="고객에게 '제작 시작'알림 전달하기\n고객에게 '제작 시작'알림 전달완료\n고객에게 '제작 완료'알림 전달하기\n고객에게 '제작 완료'알림 전달완료"
+                    android:id="@+id/bop_progress_noti_message"
+                    android:textColor="@color/bg_main"
+                    android:layout_gravity="center"
+                    android:textSize="17dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:visibility="gone"
+                    android:id="@+id/bop_order_progress_start_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/black"
+                    android:gravity="center"
+                    android:padding="13dp"
+                    android:text="제작 시작"
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
+
+
+            <TextView
+                    android:visibility="gone"
+                    android:id="@+id/bop_order_progress_end_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray"
+                    android:gravity="center"
+                    android:padding="13dp"
+                    android:text="제작 완료"
+                    android:textColor="@color/white"
+                    android:textSize="16dp" />
+
+            <TextView
+                    android:visibility="gone"
+                    android:id="@+id/bop_serving_impossible_time_1"
+                    android:layout_marginTop="50dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="보관 시간: 00시 00분 까지"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:textSize="17dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <LinearLayout
+                    android:layout_marginVertical="50dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                <!--<de.hdodenhof.circleimageview.CircleImageView-->
+                <!--android:overScrollMode="never"-->
+                <!--android:layout_margin="15dp"-->
+                <!--android:src="@drawable/logo_1"-->
+                <!--android:layout_width="50dp"-->
+                <!--android:layout_height="50dp" />-->
+
+                <!--<LinearLayout-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical">-->
+
+                <!--<TextView-->
+                <!--android:text="Thank you for using"-->
+                <!--android:textColor="@color/black"-->
+                <!--android:textSize="15dp"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+
+                <!--<TextView-->
+                <!--android:text="Nest Of The Moon"-->
+                <!--android:textColor="@color/bg_main"-->
+                <!--android:textSize="15dp"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content" />-->
+
+                <!--</LinearLayout>-->
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+            android:padding="10dp"
+            android:layout_gravity="right"
+            android:id="@+id/bop_dialog_close_button"
+            android:src="@drawable/ic_close_button_2"
+            android:layout_width="wrap_content"
+            android:layout_height="70dp" />
+
+</FrameLayout>

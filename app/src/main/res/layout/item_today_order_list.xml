@@ -1,38 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+        android:background="@color/white"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <FrameLayout
-            android:orientation="vertical"
-            android:gravity="center"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-        <!--<TextView-->
-                <!--android:layout_margin="5dp"-->
-                <!--android:id="@+id/cart_item_count"-->
-                <!--android:gravity="center"-->
-                <!--android:text="1"-->
-                <!--android:textSize="11dp"-->
-                <!--android:textColor="@color/gray"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content" />-->
-
-        <ImageView
-                android:id="@+id/cart_c_check_box"
-                android:src="@drawable/ic_check_all"
-                android:layout_marginHorizontal="10dp"
-                android:layout_gravity="center"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-    </FrameLayout>
-
+    <!--bol: b바리스타 o오더 l리스트-->
     <ImageView
-            android:id="@+id/cart_c_tumb"
+            android:id="@+id/bol_tumb"
             android:src="@drawable/logo_1"
             android:layout_width="115dp"
             android:layout_height="115dp" />
@@ -46,17 +22,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
+
+        <!--결제시간 및 제작 완료시간 표시-->
         <TextView
                 android:layout_marginTop="5dp"
-                android:id="@+id/cart_c_way"
-                android:text="주문한 시간"
+                android:id="@+id/bol_way"
+                android:text="HOT #1 결제시간: 00시 00분"
                 android:textSize="10dp"
                 android:textColor="@color/gray"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         <TextView
-                android:id="@+id/cart_c_name"
+                android:id="@+id/bol_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="메뉴명"
@@ -64,7 +42,7 @@
                 android:textSize="18dp" />
 
         <TextView
-                android:id="@+id/cart_c_option"
+                android:id="@+id/bol_option"
                 android:text="옵션1\n옵션2\n옵션3"
                 android:textSize="11dp"
                 android:textColor="@color/black"
@@ -75,13 +53,13 @@
                 android:text="요청사항"
                 android:textSize="13dp"
                 android:gravity="center"
-                android:id="@+id/cart_c_request"
+                android:id="@+id/bol_request"
                 android:textColor="@color/bg_main"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
         <TextView
-                android:id="@+id/noti_c_price"
+                android:id="@+id/bol_price"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="10dp"
@@ -92,5 +70,40 @@
 
     </LinearLayout>
 
+    <LinearLayout
+            android:layout_marginRight="10dp"
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/bol_serial_number"
+                android:text="D13"
+                android:textSize="25dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <TextView
+                android:text="주문 번호"
+                android:textSize="12dp"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <TextView
+                android:text="제작 대기중\n제작 완료\n\n00:00\nclean up"
+                android:textSize="12dp"
+                android:gravity="center"
+                android:id="@+id/bol_order_status"
+                android:textColor="@color/bg_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+    </LinearLayout>
 
 </LinearLayout>

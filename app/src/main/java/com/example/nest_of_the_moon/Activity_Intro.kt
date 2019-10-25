@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import com.airbnb.lottie.LottieDrawable
 import com.example.nest_of_the_moon.Client.Activity_Client_Home
+import kotlinx.android.synthetic.main.activity_intro.*
 
 class Activity_Intro : AppCompatActivity()
 {
@@ -29,7 +31,7 @@ class Activity_Intro : AppCompatActivity()
 
         nextIntent = Intent(this, Activity_Client_Home::class.java)
 
-//        lottieAnimView.setAnimation("9628-open-close-box.json")
+//        lottieAnimView.setAnimation("ripples.json")
 //        lottieAnimView.repeatCount = LottieDrawable.INFINITE
 //        lottieAnimView.playAnimation()
     }

@@ -1,0 +1,99 @@
+<com.google.android.material.card.MaterialCardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        card_view:cardElevation="5dp">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:id="@+id/oht_2_thumb"
+                android:layout_width="115dp"
+                android:layout_height="115dp"
+                android:src="@drawable/logo_1"/>
+
+        <LinearLayout
+                android:layout_weight="1"
+                android:layout_marginHorizontal="7dp"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/oht_2_way"
+                    android:text="주문한 시간"
+                    android:textSize="9dp"
+                    android:textColor="@color/gray"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+
+
+            <TextView
+                    android:id="@+id/oht_2_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="메뉴명"
+                    android:textColor="@color/bg_main"
+                    android:textSize="16dp" />
+
+            <TextView
+                    android:id="@+id/oht_2_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:text="결제금액"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+            <TextView
+                    android:id="@+id/oht_2_option"
+                    android:text="옵션1\n옵션2..."
+                    android:textSize="10dp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            <TextView
+                    android:id="@+id/oht_2_request"
+                    android:text="요청사항"
+                    android:textSize="12dp"
+                    android:gravity="center"
+                    android:textColor="@color/bg_main"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <ImageView
+                android:visibility="gone"
+                android:id="@+id/oht_2_check"
+                android:padding="4dp"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_check_all"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+
+        <ImageView
+                android:visibility="gone"
+                android:id="@+id/oht_2_un_check"
+                android:layout_marginRight="10dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_un_check_all"
+                android:layout_width="40dp"
+                android:layout_height="40dp"/>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

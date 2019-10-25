@@ -142,6 +142,7 @@
 
                         <TextView
                                 android:id="@+id/create_menu_title"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -377,7 +378,7 @@
                     android:background="@color/white"
                     android:textColor="@color/black"
                     android:gravity="center"
-                    android:text="결제한 메뉴가\n\n바리스타에게 전달 되었습니다 :)\n\n해당상품의 진행 상황을\n\n세 번 째 탭 혹은\n\n아래 버튼을 눌러서 확인하세요"
+                    android:text="결제한 메뉴가\n\n바리스타에게 전달 되었습니다 :)\n\n해당상품의 준비 진행 상황을\n\n세 번 째 탭\n\n'주문 관리 화면'에서 확인하세요"
                     android:textSize="20dp" />
 
         </FrameLayout>
@@ -420,10 +421,10 @@
                 android:id="@+id/dialog_menu_detail_order_detail_page"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/bg_main"
+                android:background="@color/black"
                 android:gravity="center"
                 android:padding="13dp"
-                android:text="확인하기"
+                android:text="닫기"
                 android:textColor="@color/white"
                 android:textSize="16dp" />
 
