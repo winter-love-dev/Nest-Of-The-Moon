@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.util.Log.e
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,12 +23,21 @@ import com.android.volley.AuthFailureError
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.nest_of_the_moon.*
+import com.example.nest_of_the_moon.Barista.Activity_Barista_Home
+import com.example.nest_of_the_moon.Client.Activity_Client_Home
 import com.example.nest_of_the_moon.Client.Activity_Client_Home.Companion.GET_ID
 import com.example.nest_of_the_moon.Menu_B_Management.Fragment_Menu_Management
 import com.example.nest_of_the_moon.Menu_B_Management.Fragment_Menu_Management.Companion.mContext
 import com.example.nest_of_the_moon.Menu_B_Management.Item_Nest_Menu
 import com.example.nest_of_the_moon.Menu_C_Management.Fragment_C_Order_Management.Companion.menu_c_management_cart
 import com.example.nest_of_the_moon.Menu_C_Management.Fragment_C_Order_Management.Companion.menu_c_management_cart_button
+import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management
+import com.example.nest_of_the_moon.TCP_Manager.Companion.RoomNo
+import com.example.nest_of_the_moon.TCP_Manager.Companion.TCPSendUerID
+import com.example.nest_of_the_moon.TCP_Manager.Companion.UserType
+import com.example.nest_of_the_moon.TCP_Manager.Companion.client
+import com.example.nest_of_the_moon.TCP_Manager.Companion.send
+import com.example.nest_of_the_moon.TCP_Manager.Companion.socket
 
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.dialog_menu_detail.view.*
@@ -78,18 +88,37 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
         // mContext_Fragment_Menu_ForC_Beverage = mContext_Fragment_Menu_ForC_Beverage?.applicationContext
 
+        // todo: 웨이팅 서버 접속(클라이언트) (서비스 클래스로 코드 옮김)
+        // 방 번호
+//        var waitingRoomNo = "777"
+//        var loginUsertype: String = "Client"
+//        var loginUserId: String = GET_ID.toString()
+//        var orderRequest = "none" /*    or "newOrderRequest"    */
+//
+//        //        val roomAndUserData: String = "1" /*RoomNo + "@" + loginUserId*/
+//        var waitingRoomAndUserData: String =
+//            waitingRoomNo + "@" + loginUsertype + "@" + loginUserId + "@" + orderRequest
+//        e(TAG, "onResponse: roomAndUserData: $waitingRoomAndUserData")
+//
+//        // 방번호와 유저의 이름으로 서버에 접속한다
+//        e(TAG, "onCreate: roomAndUserData: $waitingRoomAndUserData")
+//        client = TCP_Manager.SocketClient(waitingRoomAndUserData)
+//        client?.start()
+
         mContext_Fragment_Menu_ForC_Beverage = requireContext()
 
         // 리사이클러뷰
         menu_c_beverage_recycler_view = view.findViewById(R.id.menu_c_beverage_recycler_view) as RecyclerView
-        menu_c_beverage_recycler_view!!.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+        menu_c_beverage_recycler_view!!.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-//        // 리사이클러뷰 구분선 넣기 세로
-//        menu_c_beverage_recycler_view!!.addItemDecoration(
-//                DividerItemDecoration(
-//                        requireContext(), DividerItemDecoration.VERTICAL
-//                                     )
-//                                                         )
+        //        // 리사이클러뷰 구분선 넣기 세로
+        //        menu_c_beverage_recycler_view!!.addItemDecoration(
+        //                DividerItemDecoration(
+        //                        requireContext(), DividerItemDecoration.VERTICAL
+        //                                     )
+        //                                                         )
+
 
         // 리사이클러뷰 구분선 넣기 가로
         menu_c_beverage_recycler_view!!.addItemDecoration(
@@ -125,7 +154,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
         {
             override fun onResponse(call: Call<List<Item_Nest_Menu>>, response: Response<List<Item_Nest_Menu>>)
             {
-                Log.e(Fragment_Menu_Management.TAG, "list call onResponse = 수신 받음")
+                e(Fragment_Menu_Management.TAG, "chatList call onResponse = 수신 받음")
 
                 item_Nest_Menu_Client = response.body() as ArrayList<Item_Nest_Menu>
 
@@ -137,10 +166,10 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                     //                            "onResponse: BroadCastTitle: " + item_Noti.get(i).Menu_Name
                     //                         )
 
-                    Log.e(
+                    e(
                             Fragment_Menu_Management.TAG,
                             "onResponse: Menu_Serving_Size: " + item_Nest_Menu_Client.get(i).Menu_Serving_Size
-                         )
+                     )
                 }
 
                 cart = item_Nest_Menu_Client.get(0).cartCount
@@ -153,13 +182,13 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                 })
 
                 menu_c_beverage_recycler_view?.adapter = NestClientMenuAdapter(mContext_Fragment_Menu_ForC_Beverage)
-                menu_c_beverage_recycler_view?.setAdapter(menu_c_beverage_recycler_view?.adapter)
+                menu_c_beverage_recycler_view?.adapter = menu_c_beverage_recycler_view?.adapter
             }
 
             override fun onFailure(call: Call<List<Item_Nest_Menu>>, t: Throwable)
             {
                 Toast.makeText(mContext, "리스트 로드 실패", Toast.LENGTH_SHORT).show()
-                Log.e(Fragment_Menu_Management.TAG, "onFailure: t: " + t.message)
+                e(Fragment_Menu_Management.TAG, "onFailure: t: " + t.message)
             }
         })
     }
@@ -216,7 +245,6 @@ class Fragment_Menu_ForC_Beverage: Fragment()
             // 상품 정보 상세보기와 구매를 선택할 수 있는 다이얼로그
             holder.item.setOnClickListener(View.OnClickListener {
 
-
                 // todo: 주문 선택 다이얼로그
                 val builder = AlertDialog.Builder(requireContext())
                 val inflater = LayoutInflater.from(requireContext())
@@ -262,9 +290,11 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
                 // 결제 진행시 다이얼로그에서 진행함
                 dialog_menu_detail_webview = dialog_view.findViewById(R.id.dialog_menu_detail_webview)
-                var dialog_menu_detail_bottom_button_area: LinearLayout = dialog_view.findViewById(R.id.dialog_menu_detail_bottom_button_area)
+                var dialog_menu_detail_bottom_button_area: LinearLayout =
+                    dialog_view.findViewById(R.id.dialog_menu_detail_bottom_button_area)
                 dialog_menu_detail_payment_complete = dialog_view.findViewById(R.id.dialog_menu_detail_payment_complete)
-                dialog_menu_detail_order_detail_page = dialog_view.findViewById(R.id.dialog_menu_detail_order_detail_page)
+                dialog_menu_detail_order_detail_page =
+                    dialog_view.findViewById(R.id.dialog_menu_detail_order_detail_page)
 
                 Picasso.get().load(item_Nest_Menu_Client.get(position).Menu_Thumb)
                     .placeholder(R.drawable.logo_1) // 로드되지 않은 경우 기본 이미지
@@ -328,7 +358,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                 {
                     override fun onNothingSelected(parent: AdapterView<*>?)
                     {
-                        Log.e(TAG, "onNothingSelected: $position")
+                        e(TAG, "onNothingSelected: $position")
                     }
 
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
@@ -337,13 +367,13 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                         {
                             priceOption = item_Nest_Menu_Client.get(position).Menu_Price
                             dialog_menu_detail_order_option_total_price.text = "총 결제금액: " + priceOption + "원"
-                            Log.e(TAG, "priceOption: $priceOption")
+                            e(TAG, "priceOption: $priceOption")
 
                             dialog_menu_detail_order_option_list.text = "옵션 없음"
 
                             // 서버로 전송할 메뉴 옵션
                             Menu_Option = "옵션 없음"
-                            Log.e(TAG, "Menu_Option: $Menu_Option")
+                            e(TAG, "Menu_Option: $Menu_Option")
 
                             menu = ""
                         }
@@ -357,7 +387,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                             {
                                 priceOption = item_Nest_Menu_Client.get(position).Menu_Price
                                 dialog_menu_detail_order_option_total_price.text = "총 결제금액: " + priceOption + "원"
-                                Log.e(TAG, "priceOption: $priceOption")
+                                e(TAG, "priceOption: $priceOption")
 
                                 menu = menu + "시럽 추가"
 
@@ -365,7 +395,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
                                 // 서버로 전송할 옵션 내용
                                 Menu_Option = menu
-                                Log.e(TAG, "Menu_Option: $Menu_Option")
+                                e(TAG, "Menu_Option: $Menu_Option")
 
                                 menu = menu + "\n"
                             }
@@ -380,7 +410,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                             {
                                 priceOption = item_Nest_Menu_Client.get(position).Menu_Price
                                 dialog_menu_detail_order_option_total_price.text = "총 결제금액: " + priceOption + "원"
-                                Log.e(TAG, "priceOption: $priceOption")
+                                e(TAG, "priceOption: $priceOption")
 
                                 menu = menu + "휘핑크림 추가"
 
@@ -388,7 +418,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
                                 // 서버로 전송할 메뉴 옵션
                                 Menu_Option = menu
-                                Log.e(TAG, "Menu_Option: $Menu_Option")
+                                e(TAG, "Menu_Option: $Menu_Option")
 
                                 menu = menu + "\n"
                             }
@@ -406,14 +436,14 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                                     Integer.parseInt(item_Nest_Menu_Client.get(position).Menu_Price) + 500
                                 priceOption = increasePrice.toString()
                                 dialog_menu_detail_order_option_total_price.text = "총 결제금액: " + priceOption + "원"
-                                Log.e(TAG, "priceOption: $priceOption")
+                                e(TAG, "priceOption: $priceOption")
 
                                 menu = menu + "샷 추가"
                                 dialog_menu_detail_order_option_list.text = menu
 
                                 // 서버로 전송할 메뉴 옵션
                                 Menu_Option = menu
-                                Log.e(TAG, "Menu_Option: $Menu_Option")
+                                e(TAG, "Menu_Option: $Menu_Option")
 
                                 menu = menu + "\n"
                             }
@@ -433,21 +463,21 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                     servingWay.add("ICE")
 
                     selectServingWay = "HOT"
-                    Log.e(TAG, "HOT")
+                    e(TAG, "HOT")
                 }
                 else if (item_Nest_Menu_Client.get(position).Menu_Serving_Way.equals("HOT"))
                 {
                     servingWay.add("해당 메뉴는 HOT만 제공합니다")
 
                     selectServingWay = "HOT"
-                    Log.e(TAG, "HOT")
+                    e(TAG, "HOT")
                 }
                 else if (item_Nest_Menu_Client.get(position).Menu_Serving_Way.equals("ICE"))
                 {
                     servingWay.add("해당 메뉴는 ICE만 제공합니다")
 
                     selectServingWay = "ICE"
-                    Log.e(TAG, "ICE")
+                    e(TAG, "ICE")
                 }
 
                 // 스피너에서 요청사항 선택하기
@@ -459,7 +489,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                 {
                     override fun onNothingSelected(parent: AdapterView<*>?)
                     {
-                        Log.e(TAG, "onNothingSelected: $position")
+                        e(TAG, "onNothingSelected: $position")
                     }
 
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
@@ -467,12 +497,13 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                         if (position == 0)
                         {
                             selectServingWay = "HOT"
-                            Log.e(TAG, "HOT선택: position: $position")
+                            e(TAG, "HOT선택: position: $position")
                         }
+
                         else if (position == 1)
                         {
                             selectServingWay = "ICE"
-                            Log.e(TAG, "ICE 선택: position: $position")
+                            e(TAG, "ICE 선택: position: $position")
                         }
                     }
                 }
@@ -497,7 +528,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                 {
                     override fun onNothingSelected(parent: AdapterView<*>?)
                     {
-                        Log.e(TAG, "onNothingSelected: $position")
+                        e(TAG, "onNothingSelected: $position")
                     }
 
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
@@ -506,25 +537,25 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                         {
                             dialog_menu_detail_option_request.visibility = View.GONE
                             User_Request = "요청 없음"
-                            Log.e(TAG, "User_Request: $User_Request")
+                            e(TAG, "User_Request: $User_Request")
                         }
                         else if (position == 1)
                         {
                             dialog_menu_detail_option_request.visibility = View.GONE
                             User_Request = "캐리어 안에 담아주세요"
-                            Log.e(TAG, "User_Request: $User_Request")
+                            e(TAG, "User_Request: $User_Request")
                         }
                         else if (position == 2)
                         {
                             dialog_menu_detail_option_request.visibility = View.GONE
                             User_Request = "너무 뜨겁지 않게 약간 식혀주세요"
-                            Log.e(TAG, "User_Request: $User_Request")
+                            e(TAG, "User_Request: $User_Request")
                         }
                         else if (position == 3)
                         {
                             dialog_menu_detail_option_request.visibility = View.GONE
                             User_Request = "시럽 0.5방울만 넣어주세요"
-                            Log.e(TAG, "User_Request: $User_Request")
+                            e(TAG, "User_Request: $User_Request")
                         }
                         else if (position == 4)
                         {
@@ -544,7 +575,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                                 override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int)
                                 {
                                     User_Request = dialog_menu_detail_option_request.text.toString()
-                                    Log.e(TAG, "User_Request: $User_Request")
+                                    e(TAG, "User_Request: $User_Request")
                                 }
                             })
                         }
@@ -569,38 +600,39 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
                                     if (success == "1")
                                     {
-                                        Log.e(TAG, "장바구니에 담김")
+                                        e(TAG, "장바구니에 담김")
 
-                                        Toast.makeText(activity,"장바구니에 담김",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(activity, "장바구니에 담김", Toast.LENGTH_SHORT).show()
 
                                         // 장바구니 갯수 추가
-//                                        cartCount = Integer.parseInt(cart) + 1
+                                        //                                        cartCount = Integer.parseInt(cart) + 1
 
                                         cart = (Integer.parseInt(cart) + 1).toString()
 
                                         // 장바구니에 담긴 상품 갯수 표시하기
                                         menu_c_management_cart?.text = "(" + cart + ")"
 
-                                        Log.e(TAG, "cart: $cart")
+                                        e(TAG, "cart: $cart")
 
                                         dialog.dismiss()
                                     }
                                     else
                                     {
-                                        Log.e(TAG, "문제 발생")
-                                        Toast.makeText(activity,"response: $response",Toast.LENGTH_SHORT).show();
+                                        e(TAG, "문제 발생")
+                                        Toast.makeText(activity, "response: $response", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 catch (e: JSONException)
                                 {
                                     e.printStackTrace()
-                                    Log.e(TAG, "onResponse: JSONException e: $e")
-                                    Toast.makeText(activity,"onResponse: JSONException e: $e",Toast.LENGTH_SHORT).show();
+                                    e(TAG, "onResponse: JSONException e: $e")
+                                    Toast.makeText(activity, "onResponse: JSONException e: $e", Toast.LENGTH_SHORT)
+                                        .show()
                                 }
                             },
                             com.android.volley.Response.ErrorListener { error ->
-                                Log.e(TAG, "onErrorResponse: error: $error")
-                                Toast.makeText(activity,"onErrorResponse: error: $error",Toast.LENGTH_SHORT).show();
+                                e(TAG, "onErrorResponse: error: $error")
+                                Toast.makeText(activity, "onErrorResponse: error: $error", Toast.LENGTH_SHORT).show()
                             })
                     {
                         @Throws(AuthFailureError::class)
@@ -629,17 +661,6 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                             params.put("nest_Order_User_Request", User_Request)
                             params.put("nest_Order_Price", priceOption)
 
-//                            var asasd = item_Noti.get(position).Menu_No
-
-//                            Log.e(TAG, "GET_ID: $GET_ID")
-//                            Log.e(TAG, "nest_Order_Way: $nest_Order_Way")
-//                            Log.e(TAG, "nest_Order_Menu_Index: $asasd")
-//                            Log.e(TAG, "nest_Order_Serving_Way: $selectServingWay")
-//                            Log.e(TAG, "nest_Order_Menu_Option: $Menu_Option")
-
-//                            Log.e(TAG, "nest_Order_User_Request: $User_Request")
-//                            Log.e(TAG, "nest_Order_Price: $priceOption")
-
                             return params
                         }
                     }
@@ -659,11 +680,11 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                     dialog_menu_detail_bottom_button_area.visibility = View.GONE
 
                     // todo: 카카오 웹뷰 활성화
-                    dialog_menu_detail_webview?.setWebViewClient(object: KakaoWebViewClient(requireActivity())
+                    dialog_menu_detail_webview?.webViewClient = object: KakaoWebViewClient(requireActivity())
                     {
                         override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?)
                         {
-                            Log.e(TAG, "onPageStarted")
+                            e(TAG, "onPageStarted")
                             Toast.makeText(requireContext(), "결제 화면 불러오는 중", Toast.LENGTH_SHORT).show()
                             super.onPageStarted(view, url, favicon)
                         }
@@ -671,44 +692,80 @@ class Fragment_Menu_ForC_Beverage: Fragment()
                         // 웹뷰가 종료되면(결제 완료되면) 서버로 값 전송
                         override fun onPageFinished(view: WebView?, url: String?)
                         {
+                            e(TAG, "onPageFinished")
 
-                            Log.e(TAG, "onPageFinished")
-
-//                            Toast.makeText(requireContext(), "카카오페이 로드 완료", Toast.LENGTH_SHORT).show()
+                            // Toast.makeText(requireContext(), "카카오페이 로드 완료", Toast.LENGTH_SHORT).show()
 
                             val stringRequest = object: StringRequest(Method.POST,
                                     "http://115.68.231.84/getNestOrderInfo.php",
                                     com.android.volley.Response.Listener { response ->
-                                        Log.e(TAG, "onResponse: response = $response")
+                                        e(TAG, "onResponse: response = $response")
 
                                         try
                                         {
                                             val jsonObject = JSONObject(response)
 
                                             val success = jsonObject.getString("success")
+                                            val serial = jsonObject.getString("serial")
+
+                                            e(TAG, "serial: $serial")
 
                                             if (success == "1")
                                             {
-                                                Log.e(TAG, "주문 완료")
+                                                e(TAG, "주문 완료")
+
+                                                // todo: 신규 주문요청 신호 발신
+                                                var message: String? = "newOrderRequest│" + serial
+                                                send = TCP_Manager.SendThreadd(socket!!, message!!)
+                                                e(TAG, " ")
+                                                e(TAG, " ===== SendThread ===== ")
+                                                e(TAG, " message: $message")
+                                                e(TAG, " socket: $socket")
+                                                e(TAG, " ===== ======= ===== ")
+                                                e(TAG, " ")
+                                                RoomNo = "777"
+                                                UserType = "Client"
+                                                TCPSendUerID = GET_ID
+                                                send?.start()
+
+
+                                                // todo: 주문 진행할 시리얼룸 접속
+                                                var waitingRoomNo = serial // 시리얼 룸 번호
+                                                var loginUsertype = "Client"
+                                                var loginUserId: String = Activity_Client_Home.GET_ID.toString()
+                                                var orderRequest = "ClientJoinSerialRoom" /*    or "newOrderRequest"    */
+
+                                                var waitingRoomAndUserData: String =
+                                                    waitingRoomNo + "@" + loginUsertype + "@" + loginUserId + "@" + orderRequest
+                                                e(TAG, "onStartCommand: roomAndUserData: $waitingRoomAndUserData")
+
+                                                // 방번호와 유저의 이름으로 서버에 접속한다
+                                                client = TCP_Manager.SocketClient(waitingRoomAndUserData)
+                                                client?.start()
+
+                                                e(TAG, "시리얼 룸 입장함: " + serial)
+
+                                                e(TAG, "시리얼 룸 입장: $serial")
                                             }
 
                                             else
                                             {
-                                                Log.e(TAG, "문제 발생")
-                                                Toast.makeText(activity,"response: $response",Toast.LENGTH_SHORT).show();
+                                                e(TAG, "문제 발생")
+                                                Toast.makeText(activity, "response: $response", Toast.LENGTH_SHORT).show()
                                             }
                                         }
-
                                         catch (e: JSONException)
                                         {
                                             e.printStackTrace()
-                                            Log.e(TAG, "onResponse: JSONException e: $e")
-                                            Toast.makeText(activity,"onResponse: JSONException e: $e",Toast.LENGTH_SHORT).show();
+                                            e(TAG, "onResponse: JSONException e: $e")
+                                            Toast.makeText(
+                                                    activity, "onResponse: JSONException e: $e", Toast.LENGTH_SHORT
+                                                          ).show()
                                         }
                                     },
                                     com.android.volley.Response.ErrorListener { error ->
-                                        Log.e(TAG, "onErrorResponse: error: $error")
-                                        Toast.makeText(activity,"onErrorResponse: error: $error",Toast.LENGTH_SHORT).show();
+                                        e(TAG, "onErrorResponse: error: $error")
+                                        Toast.makeText(activity, "onErrorResponse: error: $error", Toast.LENGTH_SHORT).show()
                                     })
                             {
                                 @Throws(AuthFailureError::class)
@@ -746,10 +803,10 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
                             super.onPageFinished(view, url)
                         }
-                    })
+                    }
 
-                    val settings = dialog_menu_detail_webview?.getSettings()
-                    settings?.setJavaScriptEnabled(true)
+                    val settings = dialog_menu_detail_webview?.settings
+                    settings?.javaScriptEnabled = true
 
                     // 웹뷰에서 카카오페이 실행하기
                     dialog_menu_detail_webview?.loadUrl("http://115.68.231.84/addJoin_kakao.php?amount=" + priceOption) // 카카오페이로 입력값 보내기
@@ -777,7 +834,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
     override fun onStop()
     {
-        Log.e(TAG, "onStop")
+        e(TAG, "onStop")
 
         if (!nest_Order_Way.equals(null))
         {
@@ -791,5 +848,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
 
         super.onStop()
     }
+
+    // todo: 소켓통신. 바리스타에게 주문요청 보내기
 }
 

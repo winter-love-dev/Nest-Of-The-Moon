@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:gravity="right"
+        android:id="@+id/message_gravity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <LinearLayout
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <TextView
+                        android:visibility="gone"
+                        android:id="@+id/views_send"
+                        android:layout_marginRight="2dp"
+                        android:textColor="@color/bg_main"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:textSize="11dp"
+                        android:text="0"
+                />
+
+                <TextView
+                        android:id="@+id/message_user_send_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11dp"
+                        android:layout_marginVertical="4dp"
+                        android:text="send time"/>
+
+            </LinearLayout>
+
+            <!--아마 텍스트 입력이 460자 까지만 가능한 듯-->
+            <!--만약 텍스트가 460자 이상 넘어가면-->
+            <!--(더보기) 버튼 생성 후 460자 이상 텍스트를 볼 수 있는-->
+            <!--더보기 액티비티가 필요할 듯 함.-->
+            <TextView
+                    android:id="@+id/message_user_content"
+                    android:gravity="left"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="4dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@drawable/item_chat_type_1"
+                    android:textColor="@color/gray"
+                    android:text="content"
+                    android:maxEms="13" />
+
+            <!--사진 전송 뷰-->
+            <ImageView
+                    android:visibility="gone"
+                    android:layout_margin="4dp"
+                    android:id="@+id/chat_message_image"
+                    android:scaleType="centerCrop"
+                    android:layout_width="250dp"
+                    android:layout_height="160dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:src="@drawable/logo_2"
+            />
+
+            <LinearLayout
+                    android:layout_gravity="bottom"
+                    android:layout_marginRight="4dp"
+                    android:layout_marginBottom="1dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,26 +1,20 @@
 package com.example.nest_of_the_moon.Notification_Tab_Client
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import android.util.Log.e
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nest_of_the_moon.Notification_Tab_Client.Fragment_Client_Noti.Companion.OrderHistory
-import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management
 import com.example.nest_of_the_moon.R
-import com.example.recycler_view_multi_view_test.Item_OrderHistory
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.item_nest_order_noti.view.*
 import kotlinx.android.synthetic.main.item_order_history_type_2.view.*
 
 // 리사이클러뷰
 class Adapter_OrderHistory(val context: Context?): RecyclerView.Adapter<Adapter_OrderHistory.ViewHolder>()
 {
-    //    var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
+    // var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
 
     var TAG = "Adapter_OrderHistory"
 

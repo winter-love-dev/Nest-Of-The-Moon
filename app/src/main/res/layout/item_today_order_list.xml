@@ -7,11 +7,29 @@
         android:layout_height="wrap_content">
 
     <!--bol: b바리스타 o오더 l리스트-->
-    <ImageView
-            android:id="@+id/bol_tumb"
-            android:src="@drawable/logo_1"
+    <FrameLayout
+            android:layout_gravity="center"
             android:layout_width="115dp"
-            android:layout_height="115dp" />
+            android:layout_height="115dp">
+
+        <ImageView
+                android:id="@+id/bol_tumb"
+                android:src="@drawable/logo_1"
+                android:layout_width="115dp"
+                android:layout_height="115dp" />
+
+        <TextView
+                android:visibility="gone"
+                android:id="@+id/bol_tumb_comp"
+                android:text="제작 완료"
+                android:textSize="15dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:background="#8F000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+    </FrameLayout>
 
     <LinearLayout
             android:layout_marginRight="7dp"

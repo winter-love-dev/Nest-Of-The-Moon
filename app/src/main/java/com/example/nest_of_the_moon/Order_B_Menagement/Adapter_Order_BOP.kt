@@ -8,11 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management.Companion.OrderDetailInfo
-import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management.Companion.PROGRESS_CODE
 import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management.Companion.countComp
 import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management.Companion.countHandler
 import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management.Companion.itemOrderList
 import com.example.nest_of_the_moon.R
+import com.example.nest_of_the_moon.Service.nestService.Companion.PROGRESS_CODE
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.item_order_history_type_2.view.*
 

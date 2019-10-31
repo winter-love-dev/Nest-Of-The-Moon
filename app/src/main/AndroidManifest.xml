@@ -4,8 +4,11 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
+
 
     <application
             android:allowBackup="true"
@@ -15,6 +18,25 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
+        <activity
+                android:screenOrientation="portrait"
+                android:name=".Client_ChatBot.Activity_Chat_Bot">
+        </activity>
+
+<!--        <service
+                android:name=".Service.MyFirebaseMessagingService"
+                android:enabled="true"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>-->
+        <service
+                android:name=".Service.nestService"
+                android:enabled="true"
+                android:exported="true">
+        </service>
+
         <activity android:name=".Menu_C_Management.Activity_Cart">
         </activity>
         <activity android:name=".Menu_B_Management.Activity_Menu_Edit">

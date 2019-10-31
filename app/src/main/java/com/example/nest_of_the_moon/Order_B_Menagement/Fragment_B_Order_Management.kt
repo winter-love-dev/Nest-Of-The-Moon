@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.util.Log
 import android.util.Log.e
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -26,22 +25,33 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.AuthFailureError
-import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.nest_of_the_moon.ApiClient
 import com.example.nest_of_the_moon.ApiInterface
+import com.example.nest_of_the_moon.Barista.Activity_Barista_Home.Companion.GET_ID
 import com.example.nest_of_the_moon.Menu_B_Management.Fragment_Menu_Management
 import com.example.nest_of_the_moon.Notification_Tab_Client.Item_NotiList_Client
 import com.example.nest_of_the_moon.Order_B_Menagement.Adapter_Order_BOP.Companion.checkCount
 
 import com.example.nest_of_the_moon.R
+import com.example.nest_of_the_moon.Service.nestService
+import com.example.nest_of_the_moon.Service.nestService.Companion.PROGRESS_CODE
+import com.example.nest_of_the_moon.Service.nestService.Companion.START_CODE
+import com.example.nest_of_the_moon.Service.nestService.Companion.orderRequestHandler
+import com.example.nest_of_the_moon.TCP_Manager
+import com.example.nest_of_the_moon.TCP_Manager.Companion.RoomNo
+import com.example.nest_of_the_moon.TCP_Manager.Companion.TCPSendUerID
+import com.example.nest_of_the_moon.TCP_Manager.Companion.UserType
+import com.example.nest_of_the_moon.TCP_Manager.Companion.client
+import com.example.nest_of_the_moon.TCP_Manager.Companion.msgFilter
+import com.example.nest_of_the_moon.TCP_Manager.Companion.msgHandler
+import com.example.nest_of_the_moon.TCP_Manager.Companion.send
 import com.example.recycler_view_multi_view_test.Item_OrderHistory
 import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.dialog_barista_order_progress.*
-import kotlinx.android.synthetic.main.item_order_history_type_2.view.*
 import kotlinx.android.synthetic.main.item_today_order_list.view.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -50,10 +60,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.HashMap
+import java.util.*
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -69,6 +79,8 @@ class Fragment_B_Order_Management: Fragment()
 
     var Context_Fragment_B_Order_Management: Context? = null
 
+    var joinSerialRoom: String? = null
+
     // 달력
     lateinit var collapsibleCalendar: CollapsibleCalendar
 
@@ -76,25 +88,24 @@ class Fragment_B_Order_Management: Fragment()
     var recyclerViewTodayOrderList: RecyclerView? = null
     //    var itemOrderList = arrayListOf<Item_NotiList_Client>()
 
+    var date: String? = null
+
     companion object
     {
-        val START_CODE = 100
-        val PROGRESS_CODE = 101
-        var countHandler: Handler? = null    // 핸들러: 체크박스가 모두 채워지면 신호 받기
+        var countHandler: Handler? = null // 핸들러: 체크박스가 몇 개 체크했는지 확인하기
         var itemOrderList = arrayListOf<Item_NotiList_Client>()
         var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
         var countComp: Boolean = false
     }
 
     // var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_b_order_management, container, false)
 
-        Context_Fragment_B_Order_Management = activity?.applicationContext
-//        Context_Fragment_B_Order_Management = activity
+        //        Context_Fragment_B_Order_Management = activity?.applicationContext
+        Context_Fragment_B_Order_Management = activity
 
         // view find
         collapsibleCalendar = view.findViewById(R.id.b_calendarView)
@@ -113,17 +124,123 @@ class Fragment_B_Order_Management: Fragment()
                                      )
                                                       )
 
+        // todo: 새 주문 감지하기 (서비스 클래스에서 알림 받기)
+        // todo: 새 주문 감지 후 시리얼 룸으로 접속하기
+        orderRequestHandler = @SuppressLint("HandlerLeak") object: Handler()
+        {
+            override fun handleMessage(msg: Message)
+            {
+                if (msg.what == 101)
+                {
+                    if (msg.arg1 == 7777)
+                    {
+                        getTodayOrderList(date!!)
+                        e(TAG, "새 주문 감지됨 $date")
+                        e(TAG, "새 주문 감지코드: " + msg.arg1)
+                    }
+                }
+            }
+        }
+
+        countHandler = @SuppressLint("HandlerLeak") object: Handler()
+        {
+            override fun handleMessage(msg: Message)
+            {
+                super.handleMessage(msg)
+
+                if (msg.what === START_CODE)
+                {
+                    e(TAG, "메시지 받음 START_CODE")
+                }
+                else if (msg.what === PROGRESS_CODE)
+                {
+                    e(TAG, "메시지 받음 msg.what: " + msg.what)
+                    e(TAG, "메시지 받음 msg.arg1: " + msg.arg1)
+
+                    e(TAG, "countHandler countComp: " + countComp)
+
+                    if (msg.arg1 == 1)
+                    {
+                        e(TAG, "countComp: Enable")
+                        bop_order_progress_end_button.setBackgroundColor(Color.parseColor("#FFEA1C77"))
+                        bop_order_progress_end_button.isEnabled = true
+                        bop_progress_noti_message.text = "클릭하면 고객에게 '제작 완료'알림을 전달합니다"
+                    }
+                    else /*if (countComp == false)*/
+                    {
+                        e(TAG, "countComp: Disable")
+                        // bop_order_progress_end_button.setBackgroundColor(Color.parseColor("#828282"))
+
+                        bop_order_progress_end_button.setBackgroundColor(Color.GRAY)
+                        bop_order_progress_end_button.isEnabled = false
+                        bop_progress_noti_message.text = "고객에게 '제작 시작'알림을 전달했습니다"
+                    }
+                }
+            }
+        }
+
+        //        // todo: 웨이팅 서버 접속(바리스타) (서비스 클래스로 옮김)
+        //        // 방 번호
+        //        var waitingRoomNo = "777"
+        //        var loginUsertype = "Barista"
+        //        var loginUserId: String = GET_ID.toString()
+        //        var orderRequest = "imBarista" /*    or "newOrderRequest"    */
+        //
+        //        // val roomAndUserData: String = "1" /*RoomNo + "@" + loginUserId*/
+        //        var waitingRoomAndUserData: String =
+        //            waitingRoomNo + "@" + loginUsertype + "@" + loginUserId + "@" + orderRequest
+        //        e(TAG, "onResponse: roomAndUserData: $waitingRoomAndUserData")
+        //
+        //        // 방번호와 유저의 이름으로 서버에 접속한다
+        //        e(TAG, "onCreate: roomAndUserData: $waitingRoomAndUserData")
+        //        client = TCP_Manager.SocketClient(waitingRoomAndUserData)
+        //        client?.start()
+        //
+        //        // 웨이팅 서버 접속 완료
+
+        //        // 통신 유형: 주문 요청
+        //        // todo: 실시간 주문 수신 받기
+        //        msgHandler = @SuppressLint("HandlerLeak") object: Handler()
+        //        {
+        //            override fun handleMessage(msg: Message)
+        //            {
+        //                if (msg.what == 1111)
+        //                {
+        //                    e(TAG, " 수신 받음")
+        //
+        //                    // 메시지 수신받기
+        //                    e(TAG, "받은 메시지: " + msg.obj.toString())
+        //
+        //                    msgFilter = msg.obj.toString().split("│".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        //
+        //                    // 주문 감지
+        //                    for (i in msgFilter!!.indices)
+        //                    {
+        //                        e(TAG, "msgFilter[$i]: " + msgFilter?.get(i)!!)
+        //                        e(TAG, "msgFilter[$i]: " + msgFilter!![i])
+        //
+        //                        if (msgFilter!![i].equals("newOrderRequest"))
+        //                        {
+        //                            // 주문 감지되면 리스트 새로고침
+        //                            getTodayOrderList(date!!)
+        //                            e(TAG, "목록 불러오기: date: $date")
+        //                        }
+        //                    }
+        //                }
+        //            }
+        //        }
+
         return view
     }
 
     // todo: 달력 세팅
     fun CalenarSetting()
     {
-        var date: String =
+        date =
             collapsibleCalendar.selectedDay.year.toString() + "-" + collapsibleCalendar.selectedDay.month + "-" + collapsibleCalendar.selectedDay.day
 
         // todo: 오늘의 주문 목록 불러오기
-        getTodayOrderList(date)
+        getTodayOrderList(date!!)
 
         e(
                 TAG,
@@ -152,7 +269,7 @@ class Fragment_B_Order_Management: Fragment()
                  )
 
                 // todo: 오늘의 주문 목록 불러오기
-                getTodayOrderList(date)
+                getTodayOrderList(date!!)
             }
 
             override fun onItemClick(v: View)
@@ -180,7 +297,7 @@ class Fragment_B_Order_Management: Fragment()
     // todo: 오늘의 주문목록 불러오기
     fun getTodayOrderList(date: String)
     {
-        e(Fragment_Menu_Management.TAG, "getTodayOrderList(): 오늘의 주문 목록 불러오기 (관리자)")
+        e(TAG, "getTodayOrderList(): 오늘의 주문 목록 불러오기 (관리자)")
 
         //building retrofit object
         val retrofit =
@@ -197,7 +314,7 @@ class Fragment_B_Order_Management: Fragment()
             override fun onResponse(call: Call<List<Item_NotiList_Client>>,
                                     response: Response<List<Item_NotiList_Client>>)
             {
-                e(TAG, "list call onResponse = 수신 받음")
+                e(TAG, "chatList call onResponse = 수신 받음")
 
                 itemOrderList = response.body() as ArrayList<Item_NotiList_Client>
 
@@ -211,10 +328,12 @@ class Fragment_B_Order_Management: Fragment()
                      * 5. 하나만 남겨둔 데이터의 가격을 다음과 같이 표시함 '2번에서 합산한 금액으로 표시'
                      */
 
-                    e(TAG, "nest_Order_Way: $i: " + itemOrderList.get(i).nest_Order_Way)
-                    e(TAG, "nest_Order_Menu_Index: $i: " + itemOrderList.get(i).nest_Order_Menu_Index)
-                    e(TAG, "nest_Order_Check_Whether: $i: " + itemOrderList.get(i).nest_Order_Check_Whether)
+
+                    e(TAG, "index: " + itemOrderList.get(i).nest_Order_Index)
+
                 }
+
+
 
                 recyclerViewTodayOrderList?.adapter = AdapterTodayOrderList(Context_Fragment_B_Order_Management)
                 recyclerViewTodayOrderList?.setAdapter(recyclerViewTodayOrderList?.adapter)
@@ -234,8 +353,6 @@ class Fragment_B_Order_Management: Fragment()
     {
         // var bop_recycler_view: RecyclerView? = null
 
-        //        var bop_recycler_view: RecyclerView? = null
-
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
         {
             return ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_today_order_list, parent, false))
@@ -246,10 +363,33 @@ class Fragment_B_Order_Management: Fragment()
             return itemOrderList.size
         }
 
+        var serialRoomNo: String? = null
+        var compCode: String? = null
+
+        /*
+         serialRoomNo
+         compCode
+        */
+
         @TargetApi(Build.VERSION_CODES.O)
         @RequiresApi(Build.VERSION_CODES.N)
         override fun onBindViewHolder(holder: ViewHolder, position: Int)
         {
+            if (itemOrderList.get(position).nest_Order_Way == "orderCart")
+            {
+                e(TAG, "orderCart")
+                e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+            }
+            else if (itemOrderList.get(position).nest_Order_Way == "addCart")
+            {
+                e(TAG, "addCart")
+                e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+            }
+            else
+            {
+                e(TAG, "orderNow")
+                e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+            }
             e(TAG, "nest_Order_Menu_Index: " + itemOrderList.get(position).nest_Order_Menu_Index)
 
             // 썸네일 이미지
@@ -296,6 +436,17 @@ class Fragment_B_Order_Management: Fragment()
                 holder.bol_order_status.text = "제작 완료\n\n$CompletionTime\nclean up"
             }
 
+
+            if (itemOrderList.get(position).nest_Order_Product_Completion_whether == "true")
+            {
+                holder.bol_tumb_comp.visibility = View.VISIBLE
+            }
+            else
+            {
+                holder.bol_tumb_comp.visibility = View.GONE
+            }
+
+
             // 주문 번호
             holder.bol_serial_number.text = "D" + itemOrderList.get(position).nest_Order_Serial_Number
 
@@ -339,9 +490,46 @@ class Fragment_B_Order_Management: Fragment()
                 // todo: 다이얼로그 실행
                 dialog.show()
 
+                //                // 제작 완료가 안 된 시리얼 서버 접속
+                //                if (itemOrderList.get(position).nest_Order_Product_Completion_whether == "false")
+                //                {
+                //                    // todo: 시리얼 서버 접속 (바리스타)
+                //                    // 방 번호
+                //                    var waitingRoomNo = itemOrderList.get(position).nest_Order_Serial_Number
+                //                    var loginUsertype = "Barista"
+                //                    var orderRequest = "serial" /*    or "newOrderRequest"    */
+                //
+                //                    var serialRoomAndUserData: String =
+                //                        waitingRoomNo + "@" + loginUsertype + "@" + GET_ID + "@" + orderRequest
+                //
+                //                    // 방 번호와 유저의 이름으로 서버에 접속한다
+                //                    e(TAG, "serialRoomAndUserData: $serialRoomAndUserData")
+                //                    client = TCP_Manager.SocketClient(serialRoomAndUserData)
+                //                    client?.start()
+                //                }
+
+                // 정보 표시하는 법
+                if (itemOrderList.get(position).nest_Order_Way == "orderCart")
+                {
+                    e(TAG, "orderCart")
+                    e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+                }
+                else if (itemOrderList.get(position).nest_Order_Way == "addCart")
+                {
+                    e(TAG, "addCart")
+                    e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+                }
+                else
+                {
+                    e(TAG, "orderNow")
+                    e(TAG, "nest_Order_Index: " + itemOrderList.get(position).nest_Order_Index)
+                }
+
                 // todo: 맨 위로 스크롤하기 버튼
                 bop_go_top.setOnClickListener(View.OnClickListener {
-                    bop_scroll.scrollTo(0, 0) // 스크롤 뷰 위로
+                    bop_scroll.scrollTo(
+                            View.FOCUS_UP, View.FOCUS_UP
+                                       ) // 스크롤 뷰 위로 (0, 0)을 해도 되고 (View.FOCUS_UP, View.FOCUS_UP)도 가능
                     bop_recycler_view.smoothScrollToPosition(0) // 리사이클러뷰 위로
                 })
 
@@ -358,18 +546,19 @@ class Fragment_B_Order_Management: Fragment()
                 // todo: 제작 시작버튼 클릭
                 bop_order_progress_start_button.setOnClickListener(View.OnClickListener {
 
-                    val builder = AlertDialog.Builder(
+                    val builderr = AlertDialog.Builder(
                             ContextThemeWrapper(
-                                    Context_Fragment_B_Order_Management, R.style.Theme_AppCompat_Light_Dialog
+                                    requireContext(), R.style.Theme_AppCompat_Light_Dialog
                                                )
-                                                     )
+                                                      )
 
-                    builder.setIcon(R.drawable.logo_1)
-                    builder.setTitle("음료 제작을 시작합니다")
-                    builder.setMessage("상품의 재고를 확인하세요")
+                    builderr.setIcon(R.drawable.logo_1)
+                    builderr.setTitle("음료 제작을 시작합니다")
+                    builderr.setMessage("상품의 재고를 확인하세요")
 
-                    builder.setPositiveButton("확인") { _, _ ->
+                    builderr.setPositiveButton("확인") { _, _ ->
                         e(TAG, "확인")
+
 
                         for (i in OrderDetailInfo.indices)
                         {
@@ -391,17 +580,19 @@ class Fragment_B_Order_Management: Fragment()
                         // bop_order_progress_end_button.isEnabled = false
 
                         var index = itemOrderList.get(position).nest_Order_Index
+                        e(TAG, "index: $index")
+
+                        compCode = "666"
+                        serialRoomNo = itemOrderList.get(position).nest_Order_Serial_Number
 
                         // todo: 관리자의 주문 접수 진행 상태 업데이트
-                        updateOrderStatus("start","none","none", index)
+                        updateOrderStatus("start", "none", "none", index)
                     }
 
-                    builder.setNegativeButton("취소") { _, _ ->
+                    builderr.setNegativeButton("취소") { _, _ ->
                         e(TAG, "취소")
                     }
-
-                    builder.show()
-
+                    builderr.show()
                 })
 
                 e(TAG, "itemOrderList.size: " + itemOrderList.size)
@@ -447,6 +638,8 @@ class Fragment_B_Order_Management: Fragment()
 
                 // todo: 제작 완료버튼 클릭
                 bop_order_progress_end_button.setOnClickListener(View.OnClickListener {
+
+
                     for (i in OrderDetailInfo.indices)
                     {
                         OrderDetailInfo.get(i).user = "none"
@@ -461,13 +654,12 @@ class Fragment_B_Order_Management: Fragment()
 
                     bop_progress_noti_message.text = "고객에게 '제작 완료'알림을 전달했습니다\n\n" + "주문 번호를 확인 후 전달해주세요"
 
-
                     // todo: 픽업 추천시간 구하기
                     // 현재시간
                     val current = LocalDateTime.now()
                     val formatter_1 = DateTimeFormatter.ofPattern("HH시 mm분") // 날짜 형식
-                    val formatter_2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // 서버 저장용
                     val formatted_1 = current.format(formatter_1)
+                    val formatter_2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss") // 서버 저장용
                     e(TAG, "formatted_1: $formatted_1")
 
                     // 픽업 추천시간 (~까지)
@@ -503,16 +695,39 @@ class Fragment_B_Order_Management: Fragment()
 
                     var index = itemOrderList.get(position).nest_Order_Index
 
+                    // 배열 순서 바꾸기
+                    //                    for (i input itemOrderList.indices)
+                    //                    {
+                    //                        e(TAG, "OrderIndex: " + itemOrderList.get(i).nest_Order_Index + " i: $i")
+                    //                        if(itemOrderList.get(i).nest_Order_Product_Completion_whether == "true")
+                    //                        {
+                    //                            e(TAG, "break?")
+                    //                            Collections.swap(itemOrderList, position, /*itemOrderList.lastIndex*/i-1)
+                    //                            recyclerViewTodayOrderList?.adapter?.notifyDataSetChanged()
+                    //                            break
+                    //                        }
+                    //                    }
+
+                    /*
+         serialRoomNo
+         compCode
+        */
+
+                    compCode = "777"
+                    serialRoomNo = itemOrderList.get(position).nest_Order_Serial_Number
+
                     // todo: 관리자의 주문 접수 진행상태 업데이트
                     updateOrderStatus("end", recomendTimeToServer, impossibleTimeToServer, index)
                 })
 
-                // todo: 제작 시작 버튼, 제작 완료 버튼, 현재 상태 안내 메시지
+                // todo: 제작 시작버튼 클릭 후 상황 표시
                 if (itemOrderList.get(position).nest_Order_Check_Whether == "false")
                 {
                     e(TAG, "nest_Order_Check_Whether == false")
+                    // 제작 시작 버튼, 제작 완료 버튼
                     bop_progress_noti_message.text = "'제작 시작' 전 상품의 재고를 확인하세요"
                     bop_order_progress_start_button.visibility = View.VISIBLE
+                    bop_order_progress_end_button.visibility = View.GONE
                 }
 
                 // todo: 제작 완료 처리
@@ -538,7 +753,8 @@ class Fragment_B_Order_Management: Fragment()
                 bop_serial_number.text = "D" + itemOrderList.get(position).nest_Order_Serial_Number
                 bop_order_time.text = "결제한 시간: " + Date_of_payment
 
-                // todo: 제작 완료시간 표시
+
+                // todo: 제작 완료했을 경우
                 if (itemOrderList.get(position).nest_Order_Product_Completion_whether == "false")
                 {
                     e(TAG, "nest_Order_Product_Completion_whether == false")
@@ -555,8 +771,8 @@ class Fragment_B_Order_Management: Fragment()
 
                     progress_completion_time.text =
                         "제작 완료: " + itemOrderList.get(position).nest_Order_Product_Completion
-                    bop_serving_impossible_time_1.text = "보관 시간: " + " " + "까지"
-                    bop_serving_impossible_time_2.text = "보관 시간: " + " " + "까지"
+                    bop_serving_impossible_time_1.text = "보관 시간: " + CompletionTime + "까지"
+                    bop_serving_impossible_time_2.text = "보관 시간: " + CompletionTime + "까지"
 
                     // todo: 제작 완료 처리
                     bop_order_progress_end_button.visibility = View.GONE
@@ -589,9 +805,8 @@ class Fragment_B_Order_Management: Fragment()
                                              )
                                        )
 
-                    bop_recycler_view?.adapter = Adapter_Order_BOP(Context_Fragment_B_Order_Management)
-                    bop_recycler_view?.adapter = bop_recycler_view?.adapter
-
+                    bop_recycler_view.adapter = Adapter_Order_BOP(Context_Fragment_B_Order_Management)
+                    bop_recycler_view.adapter = bop_recycler_view.adapter
 
                     for (i in OrderDetailInfo.indices)
                     {
@@ -635,7 +850,7 @@ class Fragment_B_Order_Management: Fragment()
                         override fun onResponse(call: Call<List<Item_OrderHistory>>,
                                                 response: Response<List<Item_OrderHistory>>)
                         {
-                            e(TAG, "list call onResponse = 수신 받음")
+                            e(TAG, "chatList call onResponse = 수신 받음")
 
                             OrderDetailInfo = response.body() as ArrayList<Item_OrderHistory>
 
@@ -720,6 +935,7 @@ class Fragment_B_Order_Management: Fragment()
 
             var noti_c_tumb = view.bol_tumb
 
+            var bol_tumb_comp: TextView = view.bol_tumb_comp
             var bol_way = view.bol_way
             var bol_name = view.bol_name
             var bol_option = view.bol_option
@@ -735,8 +951,8 @@ class Fragment_B_Order_Management: Fragment()
         // updateOrderStatus()
         fun updateOrderStatus(updateType: String, Recommend_Time: String, Impossible_Time: String, index: String)
         {
-            val stringRequest = object: StringRequest(Request.Method.POST,
-                    "http://115.68.231.84/getNestOrderStatus.php",
+            val stringRequest = object: StringRequest(Method.POST,
+                    "http://115.68.231.84/getNestUpdateOrderStatus.php",
                     com.android.volley.Response.Listener { response ->
                         e(Fragment_Menu_Management.TAG, "onResponse: response = $response")
 
@@ -749,6 +965,58 @@ class Fragment_B_Order_Management: Fragment()
                             if (success == "1")
                             {
                                 e(Fragment_Menu_Management.TAG, "onResponse: 상태변경 완료")
+
+                                getTodayOrderList(date!!)
+
+                                if (compCode == "666")
+                                {
+                                    e(TAG, "compCode: $compCode")
+                                    e(TAG, "serialRoomNo: $serialRoomNo")
+
+                                    // todo: 제작 시작 신호 발신
+                                    var message: String? = "orderStatus_Start"
+                                    send = TCP_Manager.SendThreadd(TCP_Manager.socket!!, message!!)
+                                    e(TAG, " ")
+                                    e(TAG, " ===== SendThread ===== ")
+                                    e(TAG, " message: $message")
+                                    e(TAG, " socket: ${TCP_Manager.socket}")
+                                    e(TAG, " ")
+
+                                    RoomNo = serialRoomNo
+                                    UserType = "Barista"
+
+                                    TCPSendUerID = GET_ID
+                                    send?.start()
+
+                                    compCode = null
+                                    serialRoomNo = null
+                                }
+
+                                else if (compCode == "777")
+                                {
+                                    e(TAG, "compCode: $compCode")
+                                    e(TAG, "serialRoomNo: $serialRoomNo")
+
+                                    e(TAG, "compCode: $compCode")
+                                    e(TAG, "serialRoomNo: $serialRoomNo")
+                                    // todo: 제작 완료신호 발신
+                                    var message: String? = "orderStatus_End"
+                                    send = TCP_Manager.SendThreadd(TCP_Manager.socket!!, message!!)
+                                    e(TAG, " ")
+                                    e(TAG, " ===== SendThread ===== ")
+                                    e(TAG, " message: $message")
+                                    e(TAG, " socket: ${TCP_Manager.socket}")
+                                    e(TAG, " ===== ======= ===== ")
+                                    e(TAG, " ")
+
+                                    RoomNo = serialRoomNo
+                                    UserType = "Barista"
+                                    send?.start()
+
+                                    compCode = null
+                                    serialRoomNo = null
+                                }
+
                             }
                             else
                             {
@@ -773,7 +1041,7 @@ class Fragment_B_Order_Management: Fragment()
                     params.put("index", index)
                     params.put("updateType", updateType)
 
-                    if(updateType == "end")
+                    if (updateType == "end")
                     {
                         params.put("Recommend_Time", Recommend_Time)
                         params.put("Impossible_Time", Impossible_Time)
@@ -782,14 +1050,200 @@ class Fragment_B_Order_Management: Fragment()
                     return params
                 }
             }
-
             val requestQueue = Volley.newRequestQueue(Context_Fragment_B_Order_Management)
             requestQueue.add(stringRequest) // stringRequest = 바로 위에 회원가입 요청메소드 실행
         }
 
     } // 리사이클러뷰 끝
 
-    // todo: 어댑터 주문 목록
+    //    // todo: 접속 스레드
+    //    inner class SocketClient(var roomAndUserData: String): Thread() // 방 정보 ( 방번호 /  접속자 아이디 )): Thread()
+    //    {
+    //        var input: DataInputStream? = null
+    //        var output: DataOutputStream? = null
+    //
+    //        //        fun run()
+    //        override fun run()
+    //        {
+    //            try
+    //            {
+    //                // 채팅 서버에 접속 ( 연결 )  ( 서버쪽 ip와 포트 )
+    //                socket = Socket(ipad2/*서버 ip*/, port/*포트*/)
+    //
+    //                e(TAG, "SocketClient run: 접속 시도: " + socket)
+    //
+    //                // 메세지를 서버에 전달 할 수 있는 통로 ( 만들기 )
+    //                output = DataOutputStream(socket?.getOutputStream())
+    //                input = DataInputStream(socket?.getInputStream())
+    //
+    //                output!!.writeUTF(roomAndUserData)
+    //
+    //                // (메세지 수신용 쓰레드 생성 ) 리시브 쓰레드 시작
+    //                recevie = ReceiveThread(socket!!)
+    //                recevie?.start()
+    //
+    //            }
+    //            catch (e: Exception)
+    //            {
+    //                e.printStackTrace()
+    //            }
+    //
+    //        }
+    //    } //SocketClient의 끝
+    //
+    //    // todo: 발신 스레드
+    //    inner class SendThread(socket: Socket, message: String?): Thread() // ip와 포트?, var sendmsg: String?): Thread()
+    //    {
+    //        var output: DataOutputStream? = null
+    //        var sendmsg: String? = null
+    //        var socket: Socket? = null
+    //
+    //        //        fun SendThread(socket: Socket, sendmsg: String)
+    //        //        {
+    //        //            e(TAG, "SendThread: 도달했음")
+    //        //
+    //        //            this.socket = socket
+    //        //            this.sendmsg = sendmsg
+    //        //            try
+    //        //            {
+    //        //                // 채팅 서버로 메세지를 보내기 위한  스트림 생성.
+    //        //                output = DataOutputStream(socket.getOutputStream())
+    //        //            }
+    //        //            catch (e: Exception)
+    //        //            {
+    //        //                e.printStackTrace()
+    //        //            }
+    //        //
+    //        //        }
+    //
+    //        init
+    //        {
+    //            e(TAG, "SendThread: 도달했음")
+    //            try
+    //            {
+    //                // 채팅 서버로 메세지를 보내기 위한  스트림 생성.
+    //                output = DataOutputStream(socket?.getOutputStream())
+    //            }
+    //            catch (e: Exception)
+    //            {
+    //                e.printStackTrace()
+    //            }
+    //
+    //        }
+    //
+    //        // 서버로 메세지 전송 ( 이클립스 서버단에서 temp 로 전달이 된다.
+    //        //        fun run()
+    //        override fun run()
+    //        {
+    //            e(TAG, "run: SendThread: 실행됨")
+    //            try
+    //            {
+    //                if (output != null)
+    //                {
+    //                    if (sendmsg != null)
+    //                    {
+    //                        //                        int roomNo = 1;
+    //                        // 여기서 방번호와 상대방 아이디 까지 해서 보내줘야 할거같다 .
+    //                        // 서버로 메세지 전송하는 부분
+    //
+    //                        // 방 번호 @ 유저 인덱스 @ 유저 이름 @ 메시지
+    //                        //                        output.writeUTF(roomNo + "@" + targetID + "@" + targetNickName + "@" + sendmsg);
+    //
+    //                        //                         방 번호 @ 내 아이디 @ 상대 아이디 @ 메시지
+    //                        //                        output.writeUTF(RoomNo + "@" + loginUserId + "@" + targetID + "@" + sendmsg + "@" + Type);
+    //                        // todo:                 output!!.writeUTF(RoomNo + "│" + loginUserId + "│" + targetID + "│" + sendmsg + "│" + Type + "│" + Message_views)
+    //
+    //                        /*                      e(TAG, "(SendThread) roomNo: $RoomNo/ loginUserId    : $loginUserId")
+    //                                                e(TAG, "(SendThread) targetID: $targetID/ targetNickName: $targetNickName")
+    //                                                e(TAG, "(SendThread) sendmsg: " + sendmsg!!)
+    //                                                e(TAG, "(SendThread) Type: " + Type + "_ 1: 텍스트 / 2: 사진")*/
+    //
+    //                        sendmsg = null
+    //
+    //                        // 리사이클러뷰의 아이템 위치를 아래로 내리기
+    //                        //                        message_area.scrollToPosition(messageData.size() - 1);
+    //                    }
+    //                }
+    //
+    //            }
+    //            catch (e: Exception)
+    //            {
+    //                e.printStackTrace()
+    //            }
+    //
+    //        }
+    //    }
+    //
+    //    // todo: 수신 스레드
+    //    inner class ReceiveThread(socket: Socket): Thread()
+    //    {
+    //        var input: DataInputStream? = null
+    //        //        var socket: Socket? = null
+    //
+    //        init
+    //        {
+    //            try
+    //            {
+    //                // 채팅 서버로부터 메세지를 받기 위한 스트림 생성.
+    //                input = DataInputStream(socket.getInputStream())
+    //                e(TAG, "ReceiveThread try input: 연결됨 ")
+    //            }
+    //            catch (e: Exception)
+    //            {
+    //                e.printStackTrace()
+    //            }
+    //
+    //        }
+    //
+    //        override fun run()
+    //        {
+    //            try
+    //            {
+    //                while (input != null)
+    //                {
+    //                    // 채팅 서버로 부터 받은 메세지
+    //                    val msg = input!!.readUTF()
+    //                    e(TAG, "ReceiveThread: run(): String msg = null?: " + msg!!)
+    //
+    //                    if (msg != null)
+    //                    {
+    //                        e(TAG, "ReceiveThread: run() = input.readUTF(): $msg")
+    //
+    //                        // 핸들러에게 전달할 메세지 객체
+    //                        val hdmg = msgHandler?.obtainMessage()
+    //
+    //                        e(TAG, "ReceiveThread: hdmg = msgHandler.obtainMessage(): $hdmg")
+    //
+    //                        // 핸들러에게 전달할 메세지의 식별자
+    //                        hdmg?.what = 1111
+    //
+    //                        // 메세지의 본문
+    //                        hdmg?.obj = msg
+    //
+    //                        // 핸들러에게 메세지 전달 ( 화면 처리 )
+    //                        msgHandler?.sendMessage(hdmg)
+    //
+    //                        // 방 목록 갱신하기
+    //                        //                        ChatRoomList_Request();
+    //
+    //                        e(TAG, "ReceiveThread: run()에서 onCreate의 핸들러로 메시지 전달함 ")
+    //
+    //                        // 채팅 스크롤 자동으로 맨 아래로 포커스 해주기
+    //                        //                        message_area.smoothScrollToPosition(messageData.size());
+    //                    }
+    //                }
+    //            }
+    //            catch (e: Exception)
+    //            {
+    //                e.printStackTrace()
+    //                e(TAG, "run: Exception e: $e")
+    //            }
+    //
+    //        }
+    //    }
+
+
+    // 어댑터 주문 목록
     //    inner class Adapter_Order_BOP(val context: Context?): RecyclerView.Adapter<Adapter_Order_BOP.ViewHolder>()
     //    {
     //        var TAG = "Adapter_Order_BOP"

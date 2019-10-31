@@ -135,7 +135,7 @@ class Activity_Login : AppCompatActivity()
         // 필요한 요소 _ 1. 요청 메소드 선택(POST, GET) / 2. 요청보낼 주소 입력
         // 입력값을 POST로 전송할 주소를 담아둠.
         // StringRequest에 담긴 정보들을 RequestQueue 메소드 담는다.
-        val stringRequest = object : StringRequest(Request.Method.POST, URL_LOGIN, Response.Listener { response ->
+        val stringRequest = object : StringRequest(Method.POST, URL_LOGIN, Response.Listener { response ->
             // onResponse = 요청 결과를 받는 메소드
             // 요청한 결과를 response에 담는다.
             try

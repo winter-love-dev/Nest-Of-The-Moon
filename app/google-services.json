@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1037637111585",
+    "firebase_url": "https://nestofthemoon-332e4.firebaseio.com",
+    "project_id": "nestofthemoon-332e4",
+    "storage_bucket": "nestofthemoon-332e4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1037637111585:android:e5fa7b22785689e1e2b860",
+        "android_client_info": {
+          "package_name": "com.example.nest_of_the_moon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1037637111585-vuln6d7n1js5usilmp2tb7shajbha4bf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrGapG6azfkmtzHF8eNCWzJzilJzPVZfc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1037637111585-vuln6d7n1js5usilmp2tb7shajbha4bf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

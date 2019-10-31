@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:gravity="left"
+        android:id="@+id/message_gravity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="top"
+            android:padding="5dp"
+            android:layout_marginHorizontal="4dp"
+            android:layout_marginVertical="5dp"
+            android:src="@drawable/chat_bot_icon"/>
+
+    <LinearLayout
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+                android:layout_gravity="left"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="2dp"
+                android:text="Moon's Bot"/>
+
+        <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <!--아마 텍스트 입력이 460자 까지만 가능한 듯-->
+            <!--만약 텍스트가 460자 이상 넘어가면-->
+            <!--(더보기) 버튼 생성 후 460자 이상 텍스트를 볼 수 있는-->
+            <!--더보기 액티비티가 필요할 듯 함.-->
+            <TextView
+                    android:gravity="left"
+                    android:id="@+id/message_bot_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="4dp"
+                    android:background="@drawable/item_chat_type_2"
+                    android:textColor="@color/white"
+                    android:text="content"
+                    android:maxEms="13"/>
+
+            <!--사진 전송 뷰-->
+            <ImageView
+                    android:visibility="gone"
+                    android:layout_margin="4dp"
+                    android:id="@+id/chat_message_image"
+                    android:scaleType="centerCrop"
+                    android:layout_width="250dp"
+                    android:layout_height="160dp"
+                    android:layout_marginHorizontal="4dp"
+                    android:src="@drawable/logo_2"
+            />
+
+            <!--챗봇은 어차피 즉각 대답해주기 때문에 수신 시간 표시가 의미 없다고 생각함-->
+            <!--유저가 물어본 시간만 표시하면 될 듯-->
+            <!--            <LinearLayout
+                                android:layout_gravity="bottom"
+                                android:layout_marginRight="4dp"
+                                android:layout_marginBottom="1dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                            <TextView
+                                    android:id="@+id/message_bot_receive_time"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="11dp"
+                                    android:layout_gravity="bottom"
+                                    android:layout_marginVertical="4dp"
+                                    android:text="receive time" />
+
+                        </LinearLayout>-->
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -21,6 +21,7 @@
 
             <TextView
                     android:text="환불"
+                    android:visibility="invisible"
                     android:id="@+id/bop_refund_button"
                     android:layout_margin="20dp"
                     android:background="@drawable/item_button_1"

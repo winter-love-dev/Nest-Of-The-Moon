@@ -1,11 +1,13 @@
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
+        android:orientation="vertical"
+        android:background="@color/white"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        card_view:cardElevation="5dp">
+        android:elevation="5dp">
 
     <LinearLayout
             android:orientation="horizontal"
@@ -96,4 +98,4 @@
 
     </LinearLayout>
 
-</com.google.android.material.card.MaterialCardView>
+</LinearLayout>

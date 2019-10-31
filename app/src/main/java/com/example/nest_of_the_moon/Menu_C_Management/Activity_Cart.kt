@@ -25,15 +25,13 @@ import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.nest_of_the_moon.ApiClient
-import com.example.nest_of_the_moon.ApiInterface
+import com.example.nest_of_the_moon.*
 import com.example.nest_of_the_moon.Client.Activity_Client_Home.Companion.GET_ID
-import com.example.nest_of_the_moon.KakaoWebViewClient
 import com.example.nest_of_the_moon.Menu_B_Management.Fragment_Menu_Management
 import com.example.nest_of_the_moon.Menu_C_Management.Fragment_C_Order_Management.Companion.menu_c_management_cart
 import com.example.nest_of_the_moon.Menu_C_Management.Fragment_Menu_ForC_Beverage.Companion.cart
 import com.example.nest_of_the_moon.Menu_C_Management.Fragment_Menu_ForC_Beverage.Companion.cartCount
-import com.example.nest_of_the_moon.R
+import com.example.nest_of_the_moon.TCP_Manager.Companion.TCPSendUerID
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_cart.*
 import kotlinx.android.synthetic.main.item_nest_cart.view.*
@@ -105,7 +103,7 @@ class Activity_Cart: AppCompatActivity()
         {
             override fun onResponse(call: Call<List<Item_Cart>>, response: Response<List<Item_Cart>>)
             {
-                e(Fragment_Menu_Management.TAG, "list call onResponse = 수신 받음")
+                e(Fragment_Menu_Management.TAG, "chatList call onResponse = 수신 받음")
 
                 item_Nest_Cart = response.body() as ArrayList<Item_Cart>
 
@@ -150,8 +148,8 @@ class Activity_Cart: AppCompatActivity()
                         item_Nest_Cart.get(i).isChecked = true
 
                         e(
-                            Fragment_Menu_Management.TAG,
-                            "item_Nest_Cart.get(position).isChecked = true: " + item_Nest_Cart.get(i).isChecked
+                                Fragment_Menu_Management.TAG,
+                                "item_Nest_Cart.get(position).isChecked = true: " + item_Nest_Cart.get(i).isChecked
                          )
                     }
 
@@ -514,10 +512,27 @@ class Activity_Cart: AppCompatActivity()
                         val jsonObject = JSONObject(response)
 
                         val success = jsonObject.getString("success")
+                        val serial = jsonObject.getString("serial")
+
+                        e(TAG, "serial: $serial")
 
                         if (success == "1")
                         {
                             e(TAG, "onResponse: success")
+
+                            // todo: 신규 주문 신호 발신
+                            var message: String? = "newOrderRequest│" + serial
+                            TCP_Manager.send = TCP_Manager.SendThreadd(TCP_Manager.socket!!, message!!)
+                            e(TAG, " ")
+                            e(TAG, " ===== SendThread ===== ")
+                            e(TAG, " message: $message")
+                            e(TAG, " socket: ${TCP_Manager.socket}")
+                            e(TAG, " ===== ======= ===== ")
+                            e(TAG, " ")
+                            TCP_Manager.RoomNo = "777"
+                            TCP_Manager.UserType = "Client"
+                            TCPSendUerID = GET_ID
+                            TCP_Manager.send?.start()
 
                             // 구매 완료 처리
                             if (requestType == "payment")

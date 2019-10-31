@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/message_gravity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="top"
+                android:padding="5dp"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/chat_bot_icon"/>
+
+        <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13dp"
+                    android:text="Moon's Bot"/>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <!--아마 텍스트 입력이 460자 까지만 가능한 듯-->
+                <!--만약 텍스트가 460자 이상 넘어가면-->
+                <!--(더보기) 버튼 생성 후 460자 이상 텍스트를 볼 수 있는-->
+                <!--더보기 액티비티가 필요할 듯 함.-->
+                <TextView
+                        android:gravity="left"
+                        android:id="@+id/message_bot_content"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="4dp"
+                        android:background="@drawable/item_chat_type_2"
+                        android:textColor="@color/white"
+                        android:text="content"
+                        android:maxEms="13"/>
+
+                <!-- todo: 선택창 시작-->
+
+
+                <FrameLayout
+                        android:layout_marginTop="5dp"
+                        android:background="@color/white"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                    <LinearLayout
+                            android:orientation="vertical"
+                            android:background="@drawable/item_chat_type_3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                        <TextView
+                                android:text="아메리카노"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"/>
+
+                        <View
+                                android:background="@color/bg_main"
+                                android:layout_width="match_parent"
+                                android:layout_height="0.8dp"/>
+
+                        <TextView
+                                android:text="라떼"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"/>
+
+                        <View
+                                android:background="@color/bg_main"
+                                android:layout_width="match_parent"
+                                android:layout_height="0.8dp"/>
+
+                        <TextView
+                                android:text="병음료"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"/>
+
+                        <View
+                                android:background="@color/bg_main"
+                                android:layout_width="match_parent"
+                                android:layout_height="0.8dp"/>
+
+                        <TextView
+                                android:text="디저트"
+                                android:textSize="16dp"
+                                android:padding="5dp"
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--말풍선 끝-->
+
+
+
+</LinearLayout>

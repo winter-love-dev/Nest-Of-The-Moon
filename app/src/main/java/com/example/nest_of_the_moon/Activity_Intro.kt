@@ -31,7 +31,7 @@ class Activity_Intro : AppCompatActivity()
 
         nextIntent = Intent(this, Activity_Client_Home::class.java)
 
-//        lottieAnimView.setAnimation("ripples.json")
+//        lottieAnimView.setAnimation("listen-state.json")
 //        lottieAnimView.repeatCount = LottieDrawable.INFINITE
 //        lottieAnimView.playAnimation()
     }

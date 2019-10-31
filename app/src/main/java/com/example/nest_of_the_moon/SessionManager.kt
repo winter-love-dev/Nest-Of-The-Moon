@@ -7,6 +7,8 @@ import android.util.Log
 import android.widget.Toast
 import com.example.nest_of_the_moon.Barista.Activity_Barista_Home
 import com.example.nest_of_the_moon.Client.Activity_Client_Home
+import com.example.nest_of_the_moon.Service.nestService
+import com.example.nest_of_the_moon.Service.nestService.Companion.serviceType
 import java.util.HashMap
 
 class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청(context)이 필요함.
@@ -75,6 +77,21 @@ class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청
         editor.putString(SortRequest, Sort)
 
         editor.apply() // 위에 값들을 저장한다.
+
+        // 서비스에 클라이언트로 등록하기
+        if (type == "1")
+        {
+            serviceType = "waitingRoomC"
+        }
+
+        // 바리스타
+        else
+        {
+            serviceType = "waitingRoomB"
+        }
+
+        // 서비스 시작
+        context.startService(Intent(context, nestService::class.java))
     }
 
     fun saveSortRequest(sort: String)
@@ -121,6 +138,7 @@ class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청
             if (type == "1")
             {
                 Log.e(TAG, "고객으로 로그인")
+
                 // 로그인 되어있다면 홈 화면으로 이동
                 val i = Intent(context, Activity_Client_Home::class.java)
 
@@ -130,6 +148,8 @@ class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청
                 // 인트로 화면 종료
                 (context as Activity_Intro).finish()
             }
+
+            //
             else
             {
                 Log.e(TAG, "바리스타로 로그인")
@@ -164,6 +184,9 @@ class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청
         val i = Intent(context, Activity_Login::class.java)
         context.startActivity(i)
         //        ((Activity_MyPage) context).finish();
+
+        // 서비스 종료하기
+        context.stopService(Intent(context, nestService::class.java))
     }
 
     companion object

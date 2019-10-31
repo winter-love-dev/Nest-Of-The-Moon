@@ -513,9 +513,9 @@ class Fragment_Menu_Management: Fragment()
             {
                 override fun onResponse(call: Call<List<Item_Nest_Menu>>, response: Response<List<Item_Nest_Menu>>)
                 {
-                    Log.e(TAG, "list call onResponse = 수신 받음")
-                    // Log.e(TAG, "list call onResponse = " + response.body()!!)
-                    // Log.e(TAG, "list call onResponse = " + response.body()!!.toString())
+                    Log.e(TAG, "chatList call onResponse = 수신 받음")
+                    // Log.e(TAG, "chatList call onResponse = " + response.body()!!)
+                    // Log.e(TAG, "chatList call onResponse = " + response.body()!!.toString())
 
                     item_Nest_Menu = response.body() as ArrayList<Item_Nest_Menu>
 

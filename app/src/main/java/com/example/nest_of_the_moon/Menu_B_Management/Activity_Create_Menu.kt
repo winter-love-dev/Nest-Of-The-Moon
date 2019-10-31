@@ -377,11 +377,11 @@ class Activity_Create_Menu: AppCompatActivity()
                                                 response: retrofit2.Response<List<Item_Nest_Menu>>)
                         {
                             Log.e(
-                                    Fragment_Menu_Management.TAG, "list call onResponse = " + response.body()!!
+                                    Fragment_Menu_Management.TAG, "chatList call onResponse = " + response.body()!!
                                  )
                             Log.e(
                                     Fragment_Menu_Management.TAG,
-                                    "list call onResponse = " + response.body()!!.toString()
+                                    "chatList call onResponse = " + response.body()!!.toString()
                                  )
 
                             Fragment_Menu_Management.item_Nest_Menu = response.body() as ArrayList<Item_Nest_Menu>

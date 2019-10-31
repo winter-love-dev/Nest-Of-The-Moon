@@ -2,6 +2,7 @@ package com.example.nest_of_the_moon.Notification_Tab_Client
 
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -9,7 +10,8 @@ import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Message
 import android.util.Log.e
 import android.view.ContextThemeWrapper
 import androidx.fragment.app.Fragment
@@ -31,20 +33,28 @@ import com.example.nest_of_the_moon.ApiClient
 import com.example.nest_of_the_moon.ApiInterface
 import com.example.nest_of_the_moon.Client.Activity_Client_Home.Companion.GET_ID
 import com.example.nest_of_the_moon.Menu_B_Management.Fragment_Menu_Management
+import com.example.nest_of_the_moon.Menu_C_Management.Activity_Cart
+import com.example.nest_of_the_moon.Order_B_Menagement.Fragment_B_Order_Management
 
 import com.example.nest_of_the_moon.R
+import com.example.nest_of_the_moon.Service.nestService
+import com.example.nest_of_the_moon.Service.nestService.Companion.PROGRESS_CODE
+import com.example.nest_of_the_moon.Service.nestService.Companion.orderRequestHandler
 import com.example.nest_of_the_moon.SessionManager.Companion.ID
+import com.example.nest_of_the_moon.TCP_Manager
+import com.example.nest_of_the_moon.TCP_Manager.Companion.msgFilter
 import com.example.recycler_view_multi_view_test.Item_OrderHistory
 import com.shrikanthravi.collapsiblecalendarview.widget.CollapsibleCalendar
 import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.item_nest_order_noti.view.*
-import kotlinx.android.synthetic.main.item_order_history_type_2.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class Fragment_Client_Noti: Fragment()
 {
@@ -57,6 +67,9 @@ class Fragment_Client_Noti: Fragment()
     var menu_noti_recycler_view_client: RecyclerView? = null
     var item_Noti = arrayListOf<Item_NotiList_Client>()
 
+    var orderRequestHandler2: Handler? = null // 핸들러: 체크박스가 몇 개 체크했는지 확인하기
+
+    var date: String? = null
 
     companion object
     {
@@ -78,6 +91,7 @@ class Fragment_Client_Noti: Fragment()
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_client__noti, container, false)
 
+        //
         Context_Fragment_Client_Noti = activity
 
         // view find
@@ -96,17 +110,70 @@ class Fragment_Client_Noti: Fragment()
                         requireContext(), DividerItemDecoration.VERTICAL
                                      )
                                                           )
+
+        // todo: 새 주문 감지하기 (서비스 클래스에서 알림 받기)
+        // todo: 새 주문 감지 후 시리얼 룸으로 접속하기
+        orderRequestHandler = @SuppressLint("HandlerLeak") object: Handler()
+        {
+            override fun handleMessage(msg: Message)
+            {
+                if (msg.what == 101)
+                {
+                    if (msg.arg1 == 8888)
+                    {
+                        e(TAG, "제작중 신호 감지됨 $date")
+                        e(TAG, "제작중 신호 코드: " + msg.arg1)
+                        getnotiList(date!!, GET_ID.toString())
+
+                        if (orderRequestHandler2 == null)
+                        {
+                            e(TAG, "다이얼로그 닫혀있음")
+                        }
+
+                        else
+                        {
+                            val message: Message = orderRequestHandler2?.obtainMessage()!!
+                            message.what = PROGRESS_CODE
+                            message.arg1 = 88888
+
+                            orderRequestHandler2!!.sendMessage(message)
+                        }
+
+                    }
+
+                    else if(msg.arg1 == 9999)
+                    {
+                        e(TAG, "제작 완료 신호 감지됨 $date")
+                        e(TAG, "제작 완료 신호 코드: " + msg.arg1)
+                        getnotiList(date!!, GET_ID.toString())
+
+                        if (orderRequestHandler2 == null)
+                        {
+                            e(TAG, "다이얼로그 닫혀있음")
+                        }
+                        else
+                        {
+                            val message: Message = orderRequestHandler2?.obtainMessage()!!
+                            message.what = PROGRESS_CODE
+                            message.arg1 = 99999
+
+                            orderRequestHandler2!!.sendMessage(message)
+                        }
+                    }
+                }
+            }
+        }
+
         return view
     }
 
     // todo: 달력 세팅
     fun CalenarSetting()
     {
-        var date: String =
-            collapsibleCalendar.selectedDay.year.toString() + "-" + collapsibleCalendar.selectedDay.month + "-" + collapsibleCalendar.selectedDay.day
+        date = collapsibleCalendar.selectedDay.year.toString() + "-" + collapsibleCalendar.selectedDay.month + "-" + collapsibleCalendar.selectedDay.day
 
         // todo: 주문목록 불러오기
-        getnotiList(date, GET_ID.toString())
+        getnotiList(date!!, GET_ID.toString())
 
         e(
                 TAG,
@@ -136,7 +203,7 @@ class Fragment_Client_Noti: Fragment()
                  )
 
                 // 주문목록 새로고침/
-                getnotiList(date, GET_ID.toString())
+                getnotiList(date!!, GET_ID.toString())
             }
 
             override fun onItemClick(v: View)
@@ -181,7 +248,7 @@ class Fragment_Client_Noti: Fragment()
             override fun onResponse(call: Call<List<Item_NotiList_Client>>,
                                     response: Response<List<Item_NotiList_Client>>)
             {
-                e(Fragment_Menu_Management.TAG, "list call onResponse = 수신 받음")
+                e(Fragment_Menu_Management.TAG, "chatList call onResponse = 수신 받음")
 
                 item_Noti = response.body() as ArrayList<Item_NotiList_Client>
 
@@ -207,8 +274,8 @@ class Fragment_Client_Noti: Fragment()
             override fun onFailure(call: Call<List<Item_NotiList_Client>>, t: Throwable)
             {
 
-                Toast.makeText(Fragment_Menu_Management.mContext, "리스트 로드 실패", Toast.LENGTH_SHORT).show()
-                e(Fragment_Menu_Management.TAG, "onFailure: t: " + t.message)
+//                Toast.makeText(Context_Fragment_Client_Noti, "리스트 로드 실패", Toast.LENGTH_SHORT).show()
+                e(TAG, "onFailure: t: " + t.message)
             }
         })
     }
@@ -272,7 +339,8 @@ class Fragment_Client_Noti: Fragment()
             var oht_1_order_pick_up_noti_area: LinearLayout =
                 dialog_view.findViewById(R.id.oht_1_order_pick_up_noti_area)
 
-            var oht_1_order_recycler_view: RecyclerView = dialog_view.findViewById(R.id.oht_1_order_recycler_view) as RecyclerView
+            var oht_1_order_recycler_view: RecyclerView =
+                dialog_view.findViewById(R.id.oht_1_order_recycler_view) as RecyclerView
             oht_1_order_recycler_view.layoutManager = LinearLayoutManager(requireContext())
 
             // 썸네일 이미지
@@ -286,7 +354,6 @@ class Fragment_Client_Noti: Fragment()
             // todo: 바로 주문일 경우 로직
             if (item_Noti.get(position).nest_Order_Way == "orderNow")
             {
-
                 // 메뉴명, 결제한 가격
                 holder.noti_c_name.text = item_Noti.get(position).nest_Menu_Name
                 holder.noti_c_price.text = item_Noti.get(position).nest_Order_Price + "원"
@@ -301,9 +368,12 @@ class Fragment_Client_Noti: Fragment()
                     SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Serving_Impossible_Time)
                 var Serving_Impossible_Time = sdf.format(Serving_Impossible_Time_format)
 
-                var Date_of_paymentformat =
-                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Date_of_payment)
+                var Date_of_paymentformat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Date_of_payment)
                 var Date_of_payment = sdf.format(Date_of_paymentformat)
+
+
+                var CompTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Product_Completion)
+                var CompTime = sdf.format(CompTimeFormat)
 
                 holder.noti_c_serving_time.text = Pick_Up_Recommend_Time
                 holder.noti_c_serving_impossible_time.text = Serving_Impossible_Time
@@ -322,6 +392,13 @@ class Fragment_Client_Noti: Fragment()
                     holder.noti_c_comp.visibility = View.VISIBLE
                 }
 
+                else
+                {
+                    holder.noti_c_serving_noti.visibility = View.VISIBLE
+                    holder.noti_c_serving_time_area.visibility = View.GONE
+                    holder.noti_c_comp.visibility = View.GONE
+                }
+
                 // 주문 번호
                 holder.noti_c_order_serial_number.text = "D" + item_Noti.get(position).nest_Order_Serial_Number
 
@@ -331,8 +408,74 @@ class Fragment_Client_Noti: Fragment()
                     // 다이얼로그 실행
                     dialog.show()
 
+//                    // 제작 완료가 안 된 시리얼 서버 접속
+//                    if (item_Noti.get(position).nest_Order_Product_Completion_whether == "false")
+//                    {
+//                        // todo: 시리얼 서버 접속 (클라이언트)
+//                        // 방 번호
+//                        var waitingRoomNo = item_Noti.get(position).nest_Order_Serial_Number
+//                        var loginUsertype = "Client"
+//                        var orderRequest = "serial"
+//
+//                        var serialRoomAndUserData: String =
+//                            waitingRoomNo + "@" + loginUsertype + "@" + GET_ID + "@" + orderRequest
+//
+//                        // 방번호와 유저의 이름으로 서버에 접속한다
+//                        e(TAG, "serialRoomAndUserData: $serialRoomAndUserData")
+//                        TCP_Manager.client = TCP_Manager.SocketClient(serialRoomAndUserData)
+//                        TCP_Manager.client?.start()
+//                    }
+
+                    var receiveComp = "none"
+
+                    // todo: 실시간 주문 수신 받기
+                    orderRequestHandler2 = @SuppressLint("HandlerLeak") object: Handler()
+                    {
+                        override fun handleMessage(msg: Message)
+                        {
+                            if (msg.arg1 == 88888)
+                            {
+                                oht_1_order_anim_1.pauseAnimation()
+                                oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
+
+                                oht_1_order_anim_2.playAnimation()
+                                oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                                oht_1_order_noti_message.text = "음료를 제작중입니다"
+                            }
+
+                            else if (msg.arg1 == 99999)
+                            {
+                                val current = LocalDateTime.now()
+                                val formatter_1 = DateTimeFormatter.ofPattern("HH시 mm분") // 날짜 형식
+                                val formatted_1 = current.format(formatter_1)
+
+                                oht_1_order_anim_2.pauseAnimation()
+                                oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 회색
+
+                                oht_1_order_anim_3.playAnimation()
+                                oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                                oht_1_order_noti_message.text = "음료가 완성 되었습니다! (" + formatted_1 + ")"
+                                receiveComp = "comp"
+                            }
+                        }
+                    }
+
                     // 다이얼로그 닫기 버튼
                     oht_1_order_close_button.setOnClickListener(View.OnClickListener {
+
+//                        // 제작 완료 감지되면 새로고침
+//                        if (receiveComp == "none")
+//                        {
+//
+//                        }
+//                        else if (receiveComp == "comp")
+//                        {
+//                            getnotiList(date!!, GET_ID!!)
+//                            e(TAG, "목록 불러오기: date: $date")
+//
+//                            receiveComp = "none"
+//                        }
+//
                         dialog.dismiss()
                     })
 
@@ -367,13 +510,13 @@ class Fragment_Client_Noti: Fragment()
 
                     oht_1_order_serial_number.text = "D" + item_Noti.get(position).nest_Order_Serial_Number
 
+
                     // 애니메이션 세팅
                     oht_1_order_anim_1.setAnimation("coffee_1_3.json")
                     oht_1_order_anim_1.repeatCount = LottieDrawable.INFINITE
-                    oht_1_order_anim_1.playAnimation()
+                    //                    oht_1_order_anim_1.playAnimation()
 
-                    oht_1_order_noti_1.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
-                    //                    oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
+                    oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
 
                     //                    oht_1_order_anim_1.pauseAnimation() // 정지
 
@@ -382,7 +525,7 @@ class Fragment_Client_Noti: Fragment()
 
                     oht_1_order_anim_2.setAnimation("coffee_2.json")
                     oht_1_order_anim_2.repeatCount = LottieDrawable.INFINITE
-                    oht_1_order_anim_2.playAnimation()
+                    //                    oht_1_order_anim_2.playAnimation()
 
                     //                    oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
                     oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 회색
@@ -394,22 +537,56 @@ class Fragment_Client_Noti: Fragment()
 
                     oht_1_order_anim_3.setAnimation("coffee_3.json")
                     oht_1_order_anim_3.repeatCount = LottieDrawable.INFINITE
-                    oht_1_order_anim_3.playAnimation()
 
                     //                    oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
                     oht_1_order_noti_3.setTextColor(Color.parseColor("#828282")) // 회색
 
-                    //                    oht_1_order_anim_3.pauseAnimation()
+                    oht_1_order_anim_3.pauseAnimation()
 
                     // 진행 상황 메시지
                     // oht_1_order_noti_message.text = "음료가 완성 되었습니다\n바리스타에게 주문 번호를 제시 후\n음료를 픽업 하세요 :)"
 
-                    // 픽업 시간 알림 영역 활성화
-                    oht_1_order_pick_up_noti_area.visibility = View.GONE
 
-                    // 픽업 시간 알림 메시지 세팅
-                    oht_1_order_pick_up_recommend_time.text = "00시 00분"
-                    oht_1_order_pick_up_serving_impossible_time.text = "00시 00분"
+                    // TODO: 음료 제작중 상황
+                    if (item_Noti.get(position).nest_Order_Check_Whether == "true")
+                    {
+                        oht_1_order_anim_2.playAnimation()
+                        oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                        oht_1_order_noti_message.text = "음료를 제작중입니다"
+                    }
+
+                    // todo: 제작 대기중 상황
+                    else
+                    {
+                        oht_1_order_anim_1.playAnimation()
+                        oht_1_order_noti_1.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                        oht_1_order_noti_message.text = "주문을 요청했습니다"
+                    }
+
+
+                    // TODO: 음료 완성 후 상황
+                    if (item_Noti.get(position).nest_Order_Product_Completion_whether == "true")
+                    {
+                        oht_1_order_anim_2.pauseAnimation()
+                        oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 테마 색상
+
+                        oht_1_order_anim_3.playAnimation()
+
+                        oht_1_order_pick_up_noti_area.visibility = View.VISIBLE
+
+                        // 픽업 시간 알림 메시지 세팅
+                        oht_1_order_pick_up_recommend_time.text = Pick_Up_Recommend_Time
+                        oht_1_order_pick_up_serving_impossible_time.text = Serving_Impossible_Time
+
+                        oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+
+                        oht_1_order_noti_message.text = "음료가 완성 되었습니다! (" + CompTime + ")"
+                    }
+                    else
+                    {
+                        // 픽업 시간 알림 영역 활성화
+                        oht_1_order_pick_up_noti_area.visibility = View.GONE
+                    }
 
                     oht_1_order_pick_up_order_count.text = "주문내역 1건"
 
@@ -436,6 +613,16 @@ class Fragment_Client_Noti: Fragment()
 
                     // 다이얼로그 종료되면 리스트 비우기
                     dialog.setOnDismissListener {
+
+                        if (receiveComp == "comp")
+                        {
+                            getnotiList(date!!, GET_ID.toString())
+                            receiveComp = null.toString()
+                        }
+                            else
+                        {
+
+                        }
                         OrderHistory.clear()
                     }
                 })
@@ -471,6 +658,10 @@ class Fragment_Client_Noti: Fragment()
                     SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Date_of_payment)
                 var Date_of_payment = sdf.format(Date_of_paymentformat)
 
+                var CompTimeFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(item_Noti.get(position).nest_Order_Product_Completion)
+
+                var CompTime = sdf.format(CompTimeFormat)
+
                 holder.noti_c_serving_time.text = Pick_Up_Recommend_Time
                 holder.noti_c_serving_impossible_time.text = Serving_Impossible_Time
                 holder.noti_c_order_time.text = Date_of_payment + "에 결제함"
@@ -488,6 +679,13 @@ class Fragment_Client_Noti: Fragment()
                     holder.noti_c_comp.visibility = View.VISIBLE
                 }
 
+                else
+                {
+                    holder.noti_c_serving_noti.visibility = View.VISIBLE
+                    holder.noti_c_serving_time_area.visibility = View.GONE
+                    holder.noti_c_comp.visibility = View.GONE
+                }
+
                 // 주문 번호
                 holder.noti_c_order_serial_number.text = "D" + item_Noti.get(position).nest_Order_Serial_Number
 
@@ -497,8 +695,74 @@ class Fragment_Client_Noti: Fragment()
                     // 다이얼로그 실행
                     dialog.show()
 
+                    // 제작 완료가 안 된 시리얼 서버 접속
+//                    if (item_Noti.get(position).nest_Order_Product_Completion_whether == "false")
+//                    {
+//                        // todo: 시리얼 서버 접속 (클라이언트)
+//                        // 방 번호
+//                        var waitingRoomNo = item_Noti.get(position).nest_Order_Serial_Number
+//                        var loginUsertype = "Client"
+//                        var orderRequest = "serial" /*    or "newOrderRequest"    */
+//
+//                        var serialRoomAndUserData: String =
+//                            waitingRoomNo + "@" + loginUsertype + "@" + GET_ID + "@" + orderRequest
+//
+//                        // 방번호와 유저의 이름으로 서버에 접속한다
+//                        e(TAG, "serialRoomAndUserData: $serialRoomAndUserData")
+//                        TCP_Manager.client = TCP_Manager.SocketClient(serialRoomAndUserData)
+//                        TCP_Manager.client?.start()
+//                    }
+
+                    var receiveComp = "none"
+
+                    // todo: 실시간 주문 수신 받기
+                    orderRequestHandler2 = @SuppressLint("HandlerLeak") object: Handler()
+                    {
+                        override fun handleMessage(msg: Message)
+                        {
+                            if (msg.arg1 == 88888)
+                            {
+                                oht_1_order_anim_1.pauseAnimation()
+                                oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
+
+                                oht_1_order_anim_2.playAnimation()
+                                oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                                oht_1_order_noti_message.text = "음료를 제작중입니다"
+                            }
+                            else if (msg.arg1 == 99999)
+                            {
+                                val current = LocalDateTime.now()
+                                val formatter_1 = DateTimeFormatter.ofPattern("HH시 mm분") // 날짜 형식
+                                val formatted_1 = current.format(formatter_1)
+
+                                oht_1_order_anim_2.pauseAnimation()
+                                oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 회색
+
+                                oht_1_order_anim_3.playAnimation()
+                                oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                                oht_1_order_noti_message.text = "음료가 완성 되었습니다! (" + formatted_1 + ")"
+                                receiveComp = "comp"
+                            }
+                        }
+                    }
+
                     // 다이얼로그 닫기 버튼
                     oht_1_order_close_button.setOnClickListener(View.OnClickListener {
+
+//                        // 제작 완료 감지되면 새로고침
+//                        if (receiveComp == "none")
+//                        {
+//
+//                        }
+//                        else if (receiveComp == "comp")
+//                        {
+//                            getnotiList(date!!, GET_ID!!)
+//
+//                            e(TAG, "목록 불러오기: date: $date")
+//
+//                            receiveComp = "none"
+//                        }
+
                         dialog.dismiss()
                     })
 
@@ -537,12 +801,12 @@ class Fragment_Client_Noti: Fragment()
                     oht_1_order_anim_1.setAnimation("coffee_1_3.json")
                     oht_1_order_anim_1.setMinAndMaxFrame(15, Int.MAX_VALUE)
                     oht_1_order_anim_1.repeatCount = LottieDrawable.INFINITE
-                    oht_1_order_anim_1.playAnimation()
+                    // oht_1_order_anim_1.playAnimation()
 
-                    oht_1_order_noti_1.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
-                    //                    oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
+                    // oht_1_order_noti_1.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                    oht_1_order_noti_1.setTextColor(Color.parseColor("#828282")) // 회색
 
-//                                        oht_1_order_anim_1.pauseAnimation() // 정지
+                    // oht_1_order_anim_1.pauseAnimation() // 정지
 
                     // 진행 상황 메시지
                     oht_1_order_noti_message.text = "주문을 요청했습니다"
@@ -551,13 +815,13 @@ class Fragment_Client_Noti: Fragment()
                     oht_1_order_anim_2.repeatCount = LottieDrawable.INFINITE
                     oht_1_order_anim_2.playAnimation()
 
-                    //                    oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                    // oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
                     oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 회색
 
-                                        oht_1_order_anim_2.pauseAnimation()
+                    oht_1_order_anim_2.pauseAnimation()
 
                     // 진행 상황 메시지
-                    //                    oht_1_order_noti_message.text = "음료를 제작중입니다"
+                    // oht_1_order_noti_message.text = "음료를 제작중입니다"
 
                     oht_1_order_anim_3.setAnimation("coffee_3.json")
                     oht_1_order_anim_3.repeatCount = LottieDrawable.INFINITE
@@ -566,7 +830,7 @@ class Fragment_Client_Noti: Fragment()
                     //                    oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
                     oht_1_order_noti_3.setTextColor(Color.parseColor("#828282")) // 회색
 
-                                        oht_1_order_anim_3.pauseAnimation()
+                    oht_1_order_anim_3.pauseAnimation()
 
                     // 진행 상황 메시지
                     // oht_1_order_noti_message.text = "음료가 완성 되었습니다\n바리스타에게 주문 번호를 제시 후\n음료를 픽업 하세요 :)"
@@ -574,9 +838,50 @@ class Fragment_Client_Noti: Fragment()
                     // 픽업 시간 알림 영역 활성화
                     oht_1_order_pick_up_noti_area.visibility = View.GONE
 
+                    // TODO: 음료 제작중 상황
+                    if (item_Noti.get(position).nest_Order_Check_Whether == "true")
+                    {
+                        oht_1_order_anim_2.playAnimation()
+                        oht_1_order_noti_2.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                        oht_1_order_noti_message.text = "음료를 제작중입니다"
+                    }
+
+                    // todo: 제작 대기중 상황
+                    else
+                    {
+                        oht_1_order_anim_1.playAnimation()
+                        oht_1_order_noti_1.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+                        oht_1_order_noti_message.text = "주문을 요청했습니다"
+                    }
+
+
+                    // TODO: 음료 완성 후 상황
+                    if (item_Noti.get(position).nest_Order_Product_Completion_whether == "true")
+                    {
+                        oht_1_order_anim_2.pauseAnimation()
+                        oht_1_order_noti_2.setTextColor(Color.parseColor("#828282")) // 테마 색상
+
+                        oht_1_order_anim_3.playAnimation()
+
+                        oht_1_order_pick_up_noti_area.visibility = View.VISIBLE
+
+                        // 픽업 시간 알림 메시지 세팅
+                        oht_1_order_pick_up_recommend_time.text = Pick_Up_Recommend_Time
+                        oht_1_order_pick_up_serving_impossible_time.text = Serving_Impossible_Time
+
+                        oht_1_order_noti_3.setTextColor(Color.parseColor("#EE3989")) // 테마 색상
+
+                        oht_1_order_noti_message.text = "음료가 완성 되었습니다! (" + CompTime + ")"
+                    }
+                    else
+                    {
+                        // 픽업 시간 알림 영역 활성화
+                        oht_1_order_pick_up_noti_area.visibility = View.GONE
+                    }
+
                     // 픽업 시간 알림 메시지 세팅
-                    oht_1_order_pick_up_recommend_time.text = "00시 00분"
-                    oht_1_order_pick_up_serving_impossible_time.text = "00시 00분"
+                    //                    oht_1_order_pick_up_recommend_time.text = "00시 00분"
+                    //                    oht_1_order_pick_up_serving_impossible_time.text = "00시 00분"
 
                     var count: Int = Integer.parseInt(item_Noti.get(position).CartTotalCount) + 1
 
@@ -590,8 +895,8 @@ class Fragment_Client_Noti: Fragment()
                     var orderCart = item_Noti.get(position).nest_Order_Menu_Index
 
                     //building retrofit object
-                    val retrofit =
-                        Retrofit.Builder().baseUrl(ApiClient.BASE_URL).addConverterFactory(GsonConverterFactory.create()).build()
+                    val retrofit = Retrofit.Builder().baseUrl(ApiClient.BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create()).build()
 
                     //Defining retrofit api service
                     val projectListRequest = retrofit.create(ApiInterface::class.java)
@@ -604,7 +909,7 @@ class Fragment_Client_Noti: Fragment()
                         override fun onResponse(call: Call<List<Item_OrderHistory>>,
                                                 response: Response<List<Item_OrderHistory>>)
                         {
-                            e(Fragment_Menu_Management.TAG, "list call onResponse = 수신 받음")
+                            e(Fragment_Menu_Management.TAG, "chatList call onResponse = 수신 받음")
 
                             OrderHistory = response.body() as ArrayList<Item_OrderHistory>
 
@@ -627,6 +932,15 @@ class Fragment_Client_Noti: Fragment()
 
                     // 다이얼로그 종료되면 리스트 비우기
                     dialog.setOnDismissListener {
+                        if (receiveComp == "comp")
+                        {
+                            getnotiList(date!!, GET_ID.toString())
+                            receiveComp = null.toString()
+                        }
+                        else
+                        {
+
+                        }
                         OrderHistory.clear()
                     }
                 })
@@ -662,87 +976,86 @@ class Fragment_Client_Noti: Fragment()
     } // 리사이클러뷰 끝
 
 
-
-/*    // 리사이클러뷰 시작
-    class Adapter_OrderHistory(val context: Context?): RecyclerView.Adapter<Adapter_OrderHistory.ViewHolder>()
-    {
-        //    var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
-
-        var TAG = "Adapter_OrderHistory"
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+    /*    // 리사이클러뷰 시작
+        class Adapter_OrderHistory(val context: Context?): RecyclerView.Adapter<Adapter_OrderHistory.ViewHolder>()
         {
-            return ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_order_history_type_2, parent, false))
-        }
+            //    var OrderDetailInfo = arrayListOf<Item_OrderHistory>()
 
-        override fun getItemCount(): Int
-        {
-            return OrderHistory.size
-        }
+            var TAG = "Adapter_OrderHistory"
 
-        override fun onBindViewHolder(holder: ViewHolder, position: Int)
-        {
-            e(TAG, "값 들어오냐? 독립된 어댑터 클래스")
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
+            {
+                return ViewHolder(LayoutInflater.from(context).inflate(R.layout.item_order_history_type_2, parent, false))
+            }
 
-            // 썸네일 이미지
-            Picasso.get().load(OrderHistory.get(position).nest_Menu_Thumb)
-                .placeholder(R.drawable.logo_1) // 로드되지 않은 경우 기본 이미지
-                //.resize(300,300)       // 300x300 픽셀
-                .centerCrop()            // 중앙을 기준으로 잘라내기 (전체 이미지가 약간 잘릴 수 있다)
-                .fit()                   // 이미지 늘림 없이 ImageView에 맞춤
-                .into(holder.oht_2_thumb) // this인 ImageView에 로드
+            override fun getItemCount(): Int
+            {
+                return OrderHistory.size
+            }
 
-            var count = position + 1
+            override fun onBindViewHolder(holder: ViewHolder, position: Int)
+            {
+                e(TAG, "값 들어오냐? 독립된 어댑터 클래스")
 
-            holder.oht_2_way.text = OrderHistory.get(position).nest_Order_Serving_Way + "# $count"
-            holder.oht_2_name.text = OrderHistory.get(position).nest_Menu_Name
-            holder.oht_2_price.text = OrderHistory.get(position).nest_Order_Price + "원"
+                // 썸네일 이미지
+                Picasso.get().load(OrderHistory.get(position).nest_Menu_Thumb)
+                    .placeholder(R.drawable.logo_1) // 로드되지 않은 경우 기본 이미지
+                    //.resize(300,300)       // 300x300 픽셀
+                    .centerCrop()            // 중앙을 기준으로 잘라내기 (전체 이미지가 약간 잘릴 수 있다)
+                    .fit()                   // 이미지 늘림 없이 ImageView에 맞춤
+                    .into(holder.oht_2_thumb) // this인 ImageView에 로드
 
-            holder.oht_2_option.text = OrderHistory.get(position).nest_Order_Menu_Option
-            holder.oht_2_request.text = OrderHistory.get(position).nest_Order_User_Request
+                var count = position + 1
 
-            //        // todo: 체크박스 처리
-            //        if (OrderDetailInfo.get(position).user == "Barista")
-            //        {
-            //            holder.oht_2_check.visibility = View.VISIBLE
-            //
-            //            if (OrderDetailInfo.get(position).isChecked == "false")
-            //            {
-            //                holder.oht_2_check.setImageResource(R.drawable.ic_un_check_all)
-            //            }
-            //            else
-            //            {
-            //                holder.oht_2_check.setImageResource(R.drawable.ic_check_all)
-            //            }
-            //        }
+                holder.oht_2_way.text = OrderHistory.get(position).nest_Order_Serving_Way + "# $count"
+                holder.oht_2_name.text = OrderHistory.get(position).nest_Menu_Name
+                holder.oht_2_price.text = OrderHistory.get(position).nest_Order_Price + "원"
 
-            //        holder.item.setOnClickListener(View.OnClickListener {
-            //            // 리사이클러뷰 갱신
-            //            Fragment_B_Order_Management.bop_recycler_view?.adapter?.notifyDataSetChanged()
-            //        })
+                holder.oht_2_option.text = OrderHistory.get(position).nest_Order_Menu_Option
+                holder.oht_2_request.text = OrderHistory.get(position).nest_Order_User_Request
 
-        }
+                //        // todo: 체크박스 처리
+                //        if (OrderDetailInfo.get(position).user == "Barista")
+                //        {
+                //            holder.oht_2_check.visibility = View.VISIBLE
+                //
+                //            if (OrderDetailInfo.get(position).isChecked == "false")
+                //            {
+                //                holder.oht_2_check.setImageResource(R.drawable.ic_un_check_all)
+                //            }
+                //            else
+                //            {
+                //                holder.oht_2_check.setImageResource(R.drawable.ic_check_all)
+                //            }
+                //        }
 
-        // 뷰홀더
-        inner class ViewHolder(view: View): RecyclerView.ViewHolder(view)
-        {
-            val item = view
+                //        holder.item.setOnClickListener(View.OnClickListener {
+                //            // 리사이클러뷰 갱신
+                //            Fragment_B_Order_Management.bop_recycler_view?.adapter?.notifyDataSetChanged()
+                //        })
 
-            var oht_2_thumb = view.oht_2_thumb
+            }
 
-            var oht_2_way = view.oht_2_way
-            var oht_2_name = view.oht_2_name
-            var oht_2_price = view.oht_2_price
+            // 뷰홀더
+            inner class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+            {
+                val item = view
 
-            var oht_2_option = view.oht_2_option
-            var oht_2_request = view.oht_2_request
+                var oht_2_thumb = view.oht_2_thumb
 
-            var oht_2_check = view.oht_2_check
+                var oht_2_way = view.oht_2_way
+                var oht_2_name = view.oht_2_name
+                var oht_2_price = view.oht_2_price
 
-        }
-    } // 리사이클러뷰 끝
+                var oht_2_option = view.oht_2_option
+                var oht_2_request = view.oht_2_request
 
-    */
+                var oht_2_check = view.oht_2_check
+
+            }
+        } // 리사이클러뷰 끝
+
+        */
 }
 
 
