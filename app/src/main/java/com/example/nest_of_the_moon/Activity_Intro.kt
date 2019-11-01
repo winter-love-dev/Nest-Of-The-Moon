@@ -13,7 +13,7 @@ import kotlinx.android.synthetic.main.activity_intro.*
 class Activity_Intro : AppCompatActivity()
 {
 
-    var handler: android.os.Handler? = null
+    var handler: Handler? = null
 
     var TAG: String = "Activity_Intro"
     var nextIntent: Intent? = null

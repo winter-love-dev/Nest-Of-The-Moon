@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="200dp"
+              android:layout_height="wrap_content">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <TextView
+                android:text="메뉴"
+                android:layout_weight="1"
+                android:textSize="20dp"
+                android:padding="7dp"
+                android:textColor="@color/gray"
+                android:layout_width="160dp"
+                android:id="@+id/order_option_text"
+                android:layout_height="wrap_content"/>
+
+        <ImageView
+                android:visibility="invisible"
+                android:src="@drawable/ic_check_2"
+                android:layout_marginHorizontal="5dp"
+                android:id="@+id/order_check_button"
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+
+    </LinearLayout>
+
+    <View
+            android:id="@+id/order_option_line"
+            android:background="@color/bg_main"
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"/>
+
+</LinearLayout>
+

@@ -1,7 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/message_gravity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="top"
+                android:padding="5dp"
+                android:layout_marginHorizontal="4dp"
+                android:layout_marginVertical="5dp"
+                android:src="@drawable/chat_bot_icon"/>
+
+        <LinearLayout
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13dp"
+                    android:text="Moon's Bot"/>
+
+            <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                <!--<TextView
+                        android:gravity="left"
+                        android:id="@+id/pay_message"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="4dp"
+                        android:background="@drawable/item_chat_type_2"
+                        android:textColor="@color/white"
+                        android:text="content"
+                        android:maxEms="13"/>-->
+
+                <!-- todo: 선택창 시작-->
+
+
+                <LinearLayout
+                        android:visibility="gone"
+                        android:orientation="horizontal"
+                        android:background="@drawable/item_chat_type_3"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                    <TextView
+                            android:text="취소"
+                            android:padding="7dp"
+                            android:textSize="16dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    <!--                        <View
+                                                    android:background="@color/bg_main"
+                                                    android:layout_width="0.8dp"
+                                                    android:layout_height="match_parent"/>-->
+
+                    <TextView
+                            android:text="다음"
+                            android:padding="7dp"
+                            android:textSize="16dp"
+                            android:textColor="@color/gray"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                        android:layout_marginBottom="5dp"
+                        android:background="@drawable/item_chat_type_3"
+                        android:orientation="vertical"
+                        android:layout_width="200dp"
+                        android:layout_height="wrap_content">
+                    
+                    <LinearLayout
+                            android:orientation="horizontal"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content">
+
+                        <FrameLayout android:layout_width="200dp"
+                                     android:layout_height="wrap_content">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                    android:layout_gravity="center_vertical"
+                                    android:id="@+id/serial_anim"
+                                    android:layout_width="100dp"
+                                    android:layout_height="100dp"
+                                    app:lottie_loop="true" />
+
+                            <LinearLayout
+                                    android:layout_gravity="right"
+                                    android:orientation="vertical"
+                                    android:layout_width="100dp"
+                                    android:layout_height="200dp">
+
+                                <TextView
+                                        android:id="@+id/serial_anim_num"
+                                        android:text="D13"
+                                        android:layout_marginTop="70dp"
+                                        android:textColor="@color/bg_main"
+                                        android:layout_gravity="center"
+                                        android:textSize="50dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                                <TextView
+                                        android:text="주문 번호"
+                                        android:textColor="@color/black"
+                                        android:layout_gravity="center"
+                                        android:textSize="20dp"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+
+                            </LinearLayout>
+
+
+                        </FrameLayout>
+
+
+                    </LinearLayout>
+
+                    <TextView
+                            android:text="\n주문을 요청했습니다\n"
+                            android:textColor="@color/black"
+                            android:layout_gravity="center"
+                            android:textSize="15dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <!--말풍선 끝-->
 
 </LinearLayout>

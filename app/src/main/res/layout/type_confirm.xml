@@ -11,7 +11,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="top"
-            android:padding="7dp"
+            android:padding="5dp"
             android:layout_marginHorizontal="4dp"
             android:layout_marginVertical="5dp"
             android:src="@drawable/chat_bot_icon"/>
@@ -42,7 +42,7 @@
             <!--더보기 액티비티가 필요할 듯 함.-->
             <TextView
                     android:gravity="left"
-                    android:id="@+id/message_bot_content"
+                    android:id="@+id/confirm_content"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginVertical="4dp"
@@ -51,38 +51,42 @@
                     android:text="content"
                     android:maxEms="13"/>
 
-            <!--사진 전송 뷰-->
-            <ImageView
-                    android:visibility="gone"
-                    android:layout_margin="4dp"
-                    android:id="@+id/chat_message_image"
-                    android:scaleType="centerCrop"
-                    android:layout_width="250dp"
-                    android:layout_height="160dp"
-                    android:layout_marginHorizontal="4dp"
-                    android:src="@drawable/logo_2"
-            />
+        </LinearLayout>
 
-            <!--챗봇은 어차피 즉각 대답해주기 때문에 수신 시간 표시가 의미 없다고 생각함-->
-            <!--유저가 물어본 시간만 표시하면 될 듯-->
-            <!--            <LinearLayout
-                                android:layout_gravity="bottom"
-                                android:layout_marginRight="4dp"
-                                android:layout_marginBottom="1dp"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
+        <LinearLayout
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/item_chat_type_3"
+                android:orientation="horizontal"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content">
 
-                            <TextView
-                                    android:id="@+id/message_bot_receive_time"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textSize="11dp"
-                                    android:layout_gravity="bottom"
-                                    android:layout_marginVertical="4dp"
-                                    android:text="receive time" />
+            <TextView
+                    android:text="아니"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray"
+                    android:id="@+id/confirm_cancel"
+                    android:layout_width="99.1dp"
+                    android:layout_height="wrap_content"/>
 
-                        </LinearLayout>-->
+            <View
+                    android:background="@color/bg_main"
+                    android:layout_width="0.8dp"
+                    android:layout_height="match_parent"/>
+
+            <TextView
+                    android:text="주문할게"
+                    android:padding="10dp"
+                    android:gravity="center"
+                    android:textSize="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/gray"
+                    android:id="@+id/confirm_accept"
+                    android:layout_width="99.1dp"
+                    android:layout_height="wrap_content"/>
 
         </LinearLayout>
 
