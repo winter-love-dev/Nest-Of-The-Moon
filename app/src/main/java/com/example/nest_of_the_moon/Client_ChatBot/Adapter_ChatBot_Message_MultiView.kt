@@ -14,6 +14,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieDrawable
 import com.example.nest_of_the_moon.Client_ChatBot.Activity_Chat_Bot.Companion.confirmClickReceiveHandler
 import com.example.nest_of_the_moon.Client_ChatBot.Activity_Chat_Bot.Companion.menuClickReceiveHandler
 import com.example.nest_of_the_moon.Client_ChatBot.Activity_Chat_Bot.Companion.orderOptionsHandler
@@ -78,6 +80,13 @@ class Adapter_ChatBot_Message_MultiView(val context: Context?, private val list:
                 e(TAG, "ORDER_PAY: inflate 됨")
                 view = LayoutInflater.from(parent.context).inflate(R.layout.type_order_pay, parent, false)
                 ViewHolder_Pay(view)
+            }
+
+            Item_chatBot_Message.ORDER_SERIAL ->
+            {
+                e(TAG, "ORDER_SERIAL: inflate 됨")
+                view = LayoutInflater.from(parent.context).inflate(R.layout.type_order_serial, parent, false)
+                ViewHolder_Serial(view)
             }
 
             else ->
@@ -456,7 +465,7 @@ class Adapter_ChatBot_Message_MultiView(val context: Context?, private val list:
                             for (i in list[position].payList!!.indices)
                             {
                                 // 모든 항목의 isPay를 true로 등록해서 결제 사실 알리기
-                                list[position].payList!![i].isPay = false
+                                list[position].payList!![i].isPay = true
 
                                 // 선택, 선택 안 함 구분하기.
                                 // 결제한 상품만 isPayFinally에 true로 등록하기 false인 값은 삭제 처리 유지하기 / isSelect = false로 유지하기
@@ -470,6 +479,8 @@ class Adapter_ChatBot_Message_MultiView(val context: Context?, private val list:
                                     list[position].payList!![i].isPayFinally = false
                                 }
                             }
+
+                            list[position].accecpt = true
 
                             val message: Message = payConfirmClickReceiveHandler?.obtainMessage()!!
                             message.what = PROGRESS_CODE
@@ -536,6 +547,16 @@ class Adapter_ChatBot_Message_MultiView(val context: Context?, private val list:
                     }
                 }
             }
+
+            // -----------------------
+            // todo: 주문 번호 말풍선
+            Item_chatBot_Message.ORDER_SERIAL ->
+            {
+                (holder as ViewHolder_Serial).serial_num.text = "D" + list[position].textContent
+                holder.serial_anim.setAnimation("coffee_2.json")
+                holder.serial_anim.repeatCount = LottieDrawable.INFINITE
+                holder.serial_anim.playAnimation()
+            }
         }
     }
 
@@ -593,5 +614,21 @@ class Adapter_ChatBot_Message_MultiView(val context: Context?, private val list:
         val pay_accept: TextView = itemView.findViewById(R.id.pay_accept)
     }
 
+    // todo: 주문 번호 말풍선
+    inner class ViewHolder_Serial(itemView: View) : RecyclerView.ViewHolder(itemView)
+    {
+        val serial_anim: LottieAnimationView = itemView.findViewById(R.id.serial_anim)
+        val serial_num: TextView = itemView.findViewById(R.id.serial_num)
+    }
 
 }
+
+
+
+
+
+
+
+
+
+

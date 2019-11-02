@@ -40,6 +40,7 @@ import com.example.recycler_view_multi_view_test.Item_chatBot_Message.Companion.
 import com.example.recycler_view_multi_view_test.Item_chatBot_Message.Companion.ORDER_CONFIRM
 import com.example.recycler_view_multi_view_test.Item_chatBot_Message.Companion.ORDER_MENU
 import com.example.recycler_view_multi_view_test.Item_chatBot_Message.Companion.ORDER_PAY
+import com.example.recycler_view_multi_view_test.Item_chatBot_Message.Companion.ORDER_SERIAL
 
 class Activity_Chat_Bot : AppCompatActivity(), AIListener
 {
@@ -770,8 +771,8 @@ class Activity_Chat_Bot : AppCompatActivity(), AIListener
 
                         chatList.add(
                             Item_chatBot_Message(
-                                MESSAGE_BOT,
-                                "결제 완료\n주문 번호 13",
+                                ORDER_SERIAL,
+                                "13",
                                 time.toString(),
                                 null,
                                 null,

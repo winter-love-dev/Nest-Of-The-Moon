@@ -43,7 +43,6 @@ class Adapter_Pay_List(var context: Context?, private val list: MutableList<Item
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
-
         // 메뉴명
         holder.pay_text.text = list.get(position).menuName
 
@@ -53,6 +52,24 @@ class Adapter_Pay_List(var context: Context?, private val list: MutableList<Item
             holder.pay_line.visibility = View.GONE
 //            e(TAG, "마지막 경계선을 숨김")
         }
+
+        // 모든 항목 클릭 가능, 불가능 상태 유지하기
+        if (list.get(position).isPay == true)
+        {
+            holder.item.isEnabled = false
+            holder.item.pay_delete.isEnabled = false // 삭제버튼 비활성화
+
+            holder.pay_count_spinner.visibility = View.GONE
+            holder.pay_count_finally.visibility = View.VISIBLE
+            holder.pay_count_finally.text = list[position].selectCount.toString()
+            holder.pay_price.text = list.get(position).menuPrice.toString() + "원"
+        }
+
+        else
+        {
+            holder.item.isEnabled = true
+        }
+
 
         var savePrice0 = 0
         var savePrice1 = 0
@@ -226,16 +243,6 @@ class Adapter_Pay_List(var context: Context?, private val list: MutableList<Item
             holder.pay_delete.setImageDrawable(context!!.getDrawable(R.drawable.ic_delete_forever_2))
         }
 
-        // 모든 항목 클릭 가능, 불가능 상태 유지하기
-        if (list.get(position).isPay == true)
-        {
-            holder.item.isEnabled = true
-        }
-        else
-        {
-            holder.item.isEnabled = false
-        }
-
         // 핸들러로 잔 수 선택, 삭제, 삭제 취소 상태 전달하기
 
 
@@ -257,7 +264,7 @@ class Adapter_Pay_List(var context: Context?, private val list: MutableList<Item
         val item = view
         val pay_text = view.pay_text
         var pay_count_spinner = view.pay_spinner
-        var pay_count_finally = view.pay_price
+        var pay_count_finally = view.pay_count_finally
         var pay_delete = view.pay_delete
         val pay_price = view.pay_price
         val pay_line = view.pay_line
