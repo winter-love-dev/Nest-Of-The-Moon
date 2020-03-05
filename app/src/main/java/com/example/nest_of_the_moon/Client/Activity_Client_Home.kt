@@ -4,6 +4,7 @@ import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.util.Log.e
 import android.widget.ImageView
 import android.widget.TabHost
 import com.example.nest_of_the_moon.Community.Fragment_Community
@@ -33,7 +34,7 @@ class Activity_Client_Home : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_client_main)
-        Log.e(TAG, "실행됨")
+        e(TAG, "실행됨")
 
         // 세션 선언
         sessionManager = SessionManager(this)
@@ -43,10 +44,10 @@ class Activity_Client_Home : AppCompatActivity()
         GET_NAME = user.get(SessionManager.NAME)
         GET_TYPE = user.get(SessionManager.TYPE)
 
-        Log.e(TAG, "접속한 유저 정보 불러오기")
-        Log.e(TAG, "GET_ID: $GET_ID")
-        Log.e(TAG, "GET_NAME: $GET_NAME")
-        Log.e(TAG, "GET_TYPE: $GET_TYPE")
+        e(TAG, "접속한 유저 정보 불러오기")
+        e(TAG, "GET_ID: $GET_ID")
+        e(TAG, "GET_NAME: $GET_NAME")
+        e(TAG, "GET_TYPE: $GET_TYPE")
 
         // todo: 탭호스트 설정하기
         tabhost.setup(this, supportFragmentManager, R.id.content)

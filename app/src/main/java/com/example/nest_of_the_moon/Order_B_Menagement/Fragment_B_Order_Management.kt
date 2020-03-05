@@ -166,6 +166,7 @@ class Fragment_B_Order_Management: Fragment()
                         bop_order_progress_end_button.isEnabled = true
                         bop_progress_noti_message.text = "클릭하면 고객에게 '제작 완료'알림을 전달합니다"
                     }
+
                     else /*if (countComp == false)*/
                     {
                         e(TAG, "countComp: Disable")

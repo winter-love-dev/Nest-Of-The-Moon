@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.util.Log.e
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -48,7 +49,7 @@ class Activity_Login : AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity__login)
-        Log.e(TAG, "실행됨")
+        e(TAG, "실행됨")
 
         // 세션 시작.
         // 1. 로그인 메소드에서 유저의 이름, 이메일, 유저번호를 담아둔다.

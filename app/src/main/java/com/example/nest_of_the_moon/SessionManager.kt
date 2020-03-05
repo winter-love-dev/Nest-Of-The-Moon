@@ -5,16 +5,13 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
+import java.util.HashMap
 import com.example.nest_of_the_moon.Barista.Activity_Barista_Home
 import com.example.nest_of_the_moon.Client.Activity_Client_Home
 import com.example.nest_of_the_moon.Service.nestService
 import com.example.nest_of_the_moon.Service.nestService.Companion.serviceType
-import java.util.HashMap
 
-class SessionManager // 세션에 값을 담기 위해선 기기에 자원요청(context)이 필요함.
-( // 기기의 자원사용 요청
-    var context: Context
-)
+class SessionManager(var context: Context)
 {
     var TAG: String = "SessionManager"
 

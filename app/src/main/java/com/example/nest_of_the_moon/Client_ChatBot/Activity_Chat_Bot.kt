@@ -868,7 +868,7 @@ class Activity_Chat_Bot : AppCompatActivity(), AIListener
         }
     }
 
-    // todo: 다이얼로그 플로우에 전송한 값의 결과 응답받기
+    // todo: 음성인식 응답받기
     @TargetApi(Build.VERSION_CODES.O)
     override fun onResult(response: AIResponse)
     {

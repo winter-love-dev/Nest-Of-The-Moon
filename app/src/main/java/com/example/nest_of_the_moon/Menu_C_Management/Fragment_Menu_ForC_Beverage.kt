@@ -138,7 +138,7 @@ class Fragment_Menu_ForC_Beverage: Fragment()
     {
         mContext_Fragment_Menu_ForC_Beverage = mContext_Fragment_Menu_ForC_Beverage!!.applicationContext
 
-        Log.e(Fragment_Menu_Management.TAG, "getClientMenuList(): 메뉴 목록 불러오기")
+        e(Fragment_Menu_Management.TAG, "getClientMenuList(): 메뉴 목록 불러오기")
 
         //building retrofit object
         val retrofit =

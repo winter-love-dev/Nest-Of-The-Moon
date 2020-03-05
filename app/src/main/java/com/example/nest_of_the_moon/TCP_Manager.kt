@@ -21,8 +21,9 @@ class TCP_Manager
         var socket: Socket? = null
         var client: SocketClient? = null
 
-        var ipad2 = "192.168.0.219" // 5사
-//        var ipad2 = "192.168.0.39" // 3사_5g
+//        var ipad2 = "192.168.0.219" // 5사
+        var ipad2 = "192.168.0.83" // 3사_5g
+
         var port = 12347
 
 //        var send: SendThread? = null

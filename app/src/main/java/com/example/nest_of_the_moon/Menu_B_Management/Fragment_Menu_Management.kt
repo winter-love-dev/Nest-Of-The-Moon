@@ -335,7 +335,7 @@ class Fragment_Menu_Management: Fragment()
                     holder.menu_sale_switch_on.setBackgroundColor(Color.parseColor("#FFEA1C77"))
                     holder.menu_sale_switch_off.background = mContext?.getDrawable(R.drawable.item_switch_theme)
 
-//                    item_Nest_Menu.get(position).nest_Menu_Sale = "true"
+//                    item_Nest_Menu.get(position).nest_Menu_Sale = "true"ㅎ
                 } else
                 {
                     holder.menu_sale_message.text = "판매 중단"
@@ -490,7 +490,7 @@ class Fragment_Menu_Management: Fragment()
                 }
 
                 val requestQueue = Volley.newRequestQueue(mContext)
-                requestQueue.add(stringRequest) // stringRequest = 바로 위에 회원가입 요청메소드 실행
+                requestQueue.add(stringRequest)
             }
         }
 

@@ -275,7 +275,6 @@ class nestService: Service()
 
     override fun onCreate()
     {
-
         e(TAG, "서비스 onCreate()")
 
         super.onCreate()

@@ -37,11 +37,11 @@
 
     </LinearLayout>
 
-    <com.airbnb.lottie.LottieAnimationView
+<!--    <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottieAnimView"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            app:lottie_loop="true" />
+            app:lottie_loop="true" />-->
 
 </FrameLayout>
